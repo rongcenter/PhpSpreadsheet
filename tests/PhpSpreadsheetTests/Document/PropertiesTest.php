@@ -2,27 +2,40 @@
 
 namespace PhpOffice\PhpSpreadsheetTests\Document;
 
+use DateTime;
+use DateTimeZone;
 use PhpOffice\PhpSpreadsheet\Document\Properties;
+use PhpOffice\PhpSpreadsheet\Shared\Date;
 use PHPUnit\Framework\TestCase;
 
 class PropertiesTest extends TestCase
 {
-    protected $properties;
+    /**
+     * @var Properties
+     */
+    private $properties;
+
+    /** @var float */
+    private $startTime;
 
     protected function setup(): void
     {
-        $this->properties = new Properties();
+        do {
+            // loop to avoid rare situation where timestamp changes
+            $this->startTime = (float) (new DateTime())->format('U');
+            $this->properties = new Properties();
+            $endTime = (float) (new DateTime())->format('U');
+        } while ($this->startTime !== $endTime);
     }
 
     public function testNewInstance(): void
     {
-        $createdTime = $modifiedTime = time();
         self::assertSame('Unknown Creator', $this->properties->getCreator());
         self::assertSame('Unknown Creator', $this->properties->getLastModifiedBy());
         self::assertSame('Untitled Spreadsheet', $this->properties->getTitle());
-        self::assertSame('Microsoft Corporation', $this->properties->getCompany());
-        self::assertSame($createdTime, $this->properties->getCreated());
-        self::assertSame($modifiedTime, $this->properties->getModified());
+        self::assertSame('', $this->properties->getCompany());
+        self::assertEquals($this->startTime, $this->properties->getCreated());
+        self::assertEquals($this->startTime, $this->properties->getModified());
     }
 
     public function testSetCreator(): void
@@ -41,10 +54,10 @@ class PropertiesTest extends TestCase
      */
     public function testSetCreated($expectedCreationTime, $created): void
     {
-        $expectedCreationTime = $expectedCreationTime ?? time();
+        $expectedCreationTime = $expectedCreationTime ?? $this->startTime;
 
         $this->properties->setCreated($created);
-        self::assertSame($expectedCreationTime, $this->properties->getCreated());
+        self::assertEquals($expectedCreationTime, $this->properties->getCreated());
     }
 
     public function providerCreationTime(): array
@@ -73,10 +86,10 @@ class PropertiesTest extends TestCase
      */
     public function testSetModified($expectedModifiedTime, $modified): void
     {
-        $expectedModifiedTime = $expectedModifiedTime ?? time();
+        $expectedModifiedTime = $expectedModifiedTime ?? $this->startTime;
 
         $this->properties->setModified($modified);
-        self::assertSame($expectedModifiedTime, $this->properties->getModified());
+        self::assertEquals($expectedModifiedTime, $this->properties->getModified());
     }
 
     public function providerModifiedTime(): array
@@ -150,14 +163,24 @@ class PropertiesTest extends TestCase
      *
      * @param mixed $expectedType
      * @param mixed $expectedValue
-     * @param mixed $propertyName
+     * @param string $propertyName
+     * @param mixed $propertyValue
+     * @param ?string $propertyType
      */
-    public function testSetCustomProperties($expectedType, $expectedValue, $propertyName, ...$args): void
+    public function testSetCustomProperties($expectedType, $expectedValue, $propertyName, $propertyValue, $propertyType = null): void
     {
-        $this->properties->setCustomProperty($propertyName, ...$args);
+        if ($propertyType === null) {
+            $this->properties->setCustomProperty($propertyName, $propertyValue);
+        } else {
+            $this->properties->setCustomProperty($propertyName, $propertyValue, $propertyType);
+        }
         self::assertTrue($this->properties->isCustomPropertySet($propertyName));
-        self::assertSame($expectedValue, $this->properties->getCustomPropertyValue($propertyName));
         self::assertSame($expectedType, $this->properties->getCustomPropertyType($propertyName));
+        $result = $this->properties->getCustomPropertyValue($propertyName);
+        if ($expectedType === Properties::PROPERTY_TYPE_DATE) {
+            $result = Date::formattedDateTimeFromTimestamp("$result", 'Y-m-d', new DateTimeZone('UTC'));
+        }
+        self::assertSame($expectedValue, $result);
     }
 
     public function providerCustomProperties(): array

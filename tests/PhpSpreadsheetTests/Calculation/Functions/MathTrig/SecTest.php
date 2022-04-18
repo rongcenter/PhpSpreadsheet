@@ -2,11 +2,9 @@
 
 namespace PhpOffice\PhpSpreadsheetTests\Calculation\Functions\MathTrig;
 
-use PhpOffice\PhpSpreadsheet\Calculation\Exception as CalcExp;
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PHPUnit\Framework\TestCase;
+use PhpOffice\PhpSpreadsheet\Calculation\Calculation;
 
-class SecTest extends TestCase
+class SecTest extends AllSetupTeardown
 {
     /**
      * @dataProvider providerSEC
@@ -16,11 +14,8 @@ class SecTest extends TestCase
      */
     public function testSEC($expectedResult, $angle): void
     {
-        if ($expectedResult === 'exception') {
-            $this->expectException(CalcExp::class);
-        }
-        $spreadsheet = new Spreadsheet();
-        $sheet = $spreadsheet->getActiveSheet();
+        $this->mightHaveException($expectedResult);
+        $sheet = $this->getSheet();
         $sheet->setCellValue('A2', 1.3);
         $sheet->setCellValue('A3', 2.7);
         $sheet->setCellValue('A4', -3.8);
@@ -30,8 +25,29 @@ class SecTest extends TestCase
         self::assertEqualsWithDelta($expectedResult, $result, 1E-9);
     }
 
-    public function providerSEC()
+    public function providerSEC(): array
     {
         return require 'tests/data/Calculation/MathTrig/SEC.php';
+    }
+
+    /**
+     * @dataProvider providerSecArray
+     */
+    public function testSecArray(array $expectedResult, string $array): void
+    {
+        $calculation = Calculation::getInstance();
+
+        $formula = "=SEC({$array})";
+        $result = $calculation->_calculateFormulaValue($formula);
+        self::assertEqualsWithDelta($expectedResult, $result, 1.0e-14);
+    }
+
+    public function providerSecArray(): array
+    {
+        return [
+            'row vector' => [[[1.85081571768093, 1.13949392732455, 1.85081571768093]], '{1, 0.5, -1}'],
+            'column vector' => [[[1.85081571768093], [1.13949392732455], [1.85081571768093]], '{1; 0.5; -1}'],
+            'matrix' => [[[1.85081571768093, 1.13949392732455], [1.0, 1.85081571768093]], '{1, 0.5; 0, -1}'],
+        ];
     }
 }

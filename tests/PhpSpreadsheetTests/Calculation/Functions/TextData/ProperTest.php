@@ -2,30 +2,32 @@
 
 namespace PhpOffice\PhpSpreadsheetTests\Calculation\Functions\TextData;
 
-use PhpOffice\PhpSpreadsheet\Calculation\TextData;
+use PhpOffice\PhpSpreadsheet\Calculation\Calculation;
 use PhpOffice\PhpSpreadsheet\Settings;
-use PHPUnit\Framework\TestCase;
 
-class ProperTest extends TestCase
+class ProperTest extends AllSetupTeardown
 {
-    protected function tearDown(): void
-    {
-        Settings::setLocale('en_US');
-    }
-
     /**
      * @dataProvider providerPROPER
      *
      * @param mixed $expectedResult
-     * @param $value
+     * @param mixed $str
      */
-    public function testPROPER($expectedResult, $value): void
+    public function testPROPER($expectedResult, $str = 'omitted'): void
     {
-        $result = TextData::PROPERCASE($value);
+        $this->mightHaveException($expectedResult);
+        $sheet = $this->getSheet();
+        if ($str === 'omitted') {
+            $sheet->getCell('B1')->setValue('=PROPER()');
+        } else {
+            $this->setCell('A1', $str);
+            $sheet->getCell('B1')->setValue('=PROPER(A1)');
+        }
+        $result = $sheet->getCell('B1')->getCalculatedValue();
         self::assertEquals($expectedResult, $result);
     }
 
-    public function providerPROPER()
+    public function providerPROPER(): array
     {
         return require 'tests/data/Calculation/TextData/PROPER.php';
     }
@@ -34,24 +36,23 @@ class ProperTest extends TestCase
      * @dataProvider providerLocaleLOWER
      *
      * @param string $expectedResult
-     * @param $value
+     * @param mixed $value
      * @param mixed $locale
      */
     public function testLowerWithLocaleBoolean($expectedResult, $locale, $value): void
     {
         $newLocale = Settings::setLocale($locale);
         if ($newLocale === false) {
-            Settings::setLocale('en_US');
             self::markTestSkipped('Unable to set locale for locale-specific test');
         }
-
-        $result = TextData::PROPERCASE($value);
+        $sheet = $this->getSheet();
+        $this->setCell('A1', $value);
+        $sheet->getCell('B1')->setValue('=PROPER(A1)');
+        $result = $sheet->getCell('B1')->getCalculatedValue();
         self::assertEquals($expectedResult, $result);
-
-        Settings::setLocale('en_US');
     }
 
-    public function providerLocaleLOWER()
+    public function providerLocaleLOWER(): array
     {
         return [
             ['Vrai', 'fr_FR', true],
@@ -62,6 +63,27 @@ class ProperTest extends TestCase
             ['Onwaar', 'nl_NL', false],
             ['Epätosi', 'fi', false],
             ['Ложь', 'bg', false],
+        ];
+    }
+
+    /**
+     * @dataProvider providerProperArray
+     */
+    public function testProperArray(array $expectedResult, string $array): void
+    {
+        $calculation = Calculation::getInstance();
+
+        $formula = "=PROPER({$array})";
+        $result = $calculation->_calculateFormulaValue($formula);
+        self::assertEqualsWithDelta($expectedResult, $result, 1.0e-14);
+    }
+
+    public function providerProperArray(): array
+    {
+        return [
+            'row vector' => [[["Let's", 'All Change', 'Case']], '{"lEt\'S", "aLl chAngE", "cAsE"}'],
+            'column vector' => [[["Let's"], ['All Change'], ['Case']], '{"lEt\'S"; "aLl chAngE"; "cAsE"}'],
+            'matrix' => [[['Build All', 'Your Workbooks'], ['With', 'Phpspreadsheet']], '{"bUIld aLL", "yOUr WOrkBOOks"; "wiTH", "PhpSpreadsheet"}'],
         ];
     }
 }

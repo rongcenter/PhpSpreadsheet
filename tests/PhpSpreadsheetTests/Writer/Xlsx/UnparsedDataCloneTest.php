@@ -2,7 +2,6 @@
 
 namespace PhpOffice\PhpSpreadsheetTests\Writer\Xlsx;
 
-use PhpOffice\PhpSpreadsheet\Settings;
 use PhpOffice\PhpSpreadsheet\Shared\File;
 use PHPUnit\Framework\TestCase;
 use ZipArchive;
@@ -15,8 +14,7 @@ class UnparsedDataCloneTest extends TestCase
     public function testLoadSaveXlsxWithUnparsedDataClone(): void
     {
         $sampleFilename = 'tests/data/Writer/XLSX/drawing_on_2nd_page.xlsx';
-        $resultFilename = tempnam(File::sysGetTempDir(), 'phpspreadsheet-test');
-        Settings::setLibXmlLoaderOptions(null); // reset to default options
+        $resultFilename = File::temporaryFilename();
         $reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
         $spreadsheet = $reader->load($sampleFilename);
         $spreadsheet->setActiveSheetIndex(1);
@@ -60,10 +58,9 @@ class UnparsedDataCloneTest extends TestCase
     public function testSaveTwice(): void
     {
         $sampleFilename = 'tests/data/Writer/XLSX/drawing_on_2nd_page.xlsx';
-        $resultFilename1 = tempnam(File::sysGetTempDir(), 'phpspreadsheet-test1');
-        $resultFilename2 = tempnam(File::sysGetTempDir(), 'phpspreadsheet-test2');
+        $resultFilename1 = File::temporaryFilename();
+        $resultFilename2 = File::temporaryFilename();
         self::assertNotEquals($resultFilename1, $resultFilename2);
-        Settings::setLibXmlLoaderOptions(null); // reset to default options
         $reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
         $spreadsheet = $reader->load($sampleFilename);
         $sheet = $spreadsheet->setActiveSheetIndex(1);
@@ -81,14 +78,18 @@ class UnparsedDataCloneTest extends TestCase
         $spreadsheet1 = $reader1->load($resultFilename1);
         unlink($resultFilename1);
         $sheet1c = $spreadsheet1->getSheetByName('Clone');
+        self::assertNotNull($sheet1c);
         $sheet1o = $spreadsheet1->getSheetByName('Original');
+        self::assertNotNull($sheet1o);
 
         $writer->save($resultFilename2);
         $reader2 = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
         $spreadsheet2 = $reader2->load($resultFilename2);
         unlink($resultFilename2);
         $sheet2c = $spreadsheet2->getSheetByName('Clone');
+        self::assertNotNull($sheet2c);
         $sheet2o = $spreadsheet2->getSheetByName('Original');
+        self::assertNotNull($sheet2o);
 
         self::assertEquals($spreadsheet1->getSheetCount(), $spreadsheet2->getSheetCount());
         self::assertCount(1, $sheet1c->getDrawingCollection());

@@ -4,6 +4,7 @@ namespace PhpOffice\PhpSpreadsheet\Calculation\MathTrig;
 
 use PhpOffice\PhpSpreadsheet\Calculation\Exception;
 use PhpOffice\PhpSpreadsheet\Calculation\Functions;
+use PhpOffice\PhpSpreadsheet\Calculation\Information\ExcelError;
 
 class Helpers
 {
@@ -14,7 +15,7 @@ class Helpers
      */
     public static function verySmallDenominator(float $numerator, float $denominator)
     {
-        return (abs($denominator) < 1.0E-12) ? Functions::DIV0() : ($numerator / $denominator);
+        return (abs($denominator) < 1.0E-12) ? ExcelError::DIV0() : ($numerator / $denominator);
     }
 
     /**
@@ -34,10 +35,10 @@ class Helpers
             return (int) $number;
         }
         if (is_numeric($number)) {
-            return $number;
+            return 0 + $number;
         }
 
-        throw new Exception(Functions::VALUE());
+        throw new Exception(ExcelError::VALUE());
     }
 
     /**
@@ -55,10 +56,52 @@ class Helpers
             return $substitute;
         }
         if (is_numeric($number)) {
-            return $number;
+            return 0 + $number;
         }
 
-        throw new Exception(Functions::VALUE());
+        throw new Exception(ExcelError::VALUE());
+    }
+
+    /**
+     * Confirm number >= 0.
+     *
+     * @param float|int $number
+     */
+    public static function validateNotNegative($number, ?string $except = null): void
+    {
+        if ($number >= 0) {
+            return;
+        }
+
+        throw new Exception($except ?? ExcelError::NAN());
+    }
+
+    /**
+     * Confirm number > 0.
+     *
+     * @param float|int $number
+     */
+    public static function validatePositive($number, ?string $except = null): void
+    {
+        if ($number > 0) {
+            return;
+        }
+
+        throw new Exception($except ?? ExcelError::NAN());
+    }
+
+    /**
+     * Confirm number != 0.
+     *
+     * @param float|int $number
+     */
+    public static function validateNotZero($number): void
+    {
+        if ($number) {
+            return;
+        }
+
+        throw new Exception(ExcelError::DIV0());
     }
 
     public static function returnSign(float $number): int
@@ -82,6 +125,6 @@ class Helpers
      */
     public static function numberOrNan($result)
     {
-        return is_nan($result) ? Functions::NAN() : $result;
+        return is_nan($result) ? ExcelError::NAN() : $result;
     }
 }

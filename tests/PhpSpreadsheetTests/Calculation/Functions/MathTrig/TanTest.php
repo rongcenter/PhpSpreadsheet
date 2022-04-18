@@ -2,11 +2,9 @@
 
 namespace PhpOffice\PhpSpreadsheetTests\Calculation\Functions\MathTrig;
 
-use PhpOffice\PhpSpreadsheet\Calculation\Exception as CalcExp;
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PHPUnit\Framework\TestCase;
+use PhpOffice\PhpSpreadsheet\Calculation\Calculation;
 
-class TanTest extends TestCase
+class TanTest extends AllSetupTeardown
 {
     /**
      * @dataProvider providerTan
@@ -15,19 +13,37 @@ class TanTest extends TestCase
      */
     public function testTan($expectedResult, string $formula): void
     {
-        if ($expectedResult === 'exception') {
-            $this->expectException(CalcExp::class);
-        }
-        $spreadsheet = new Spreadsheet();
-        $sheet = $spreadsheet->getActiveSheet();
+        $this->mightHaveException($expectedResult);
+        $sheet = $this->getSheet();
         $sheet->setCellValue('A2', 1);
         $sheet->getCell('A1')->setValue("=TAN($formula)");
         $result = $sheet->getCell('A1')->getCalculatedValue();
         self::assertEqualsWithDelta($expectedResult, $result, 1E-6);
     }
 
-    public function providerTan()
+    public function providerTan(): array
     {
         return require 'tests/data/Calculation/MathTrig/TAN.php';
+    }
+
+    /**
+     * @dataProvider providerTanArray
+     */
+    public function testTanArray(array $expectedResult, string $array): void
+    {
+        $calculation = Calculation::getInstance();
+
+        $formula = "=TAN({$array})";
+        $result = $calculation->_calculateFormulaValue($formula);
+        self::assertEqualsWithDelta($expectedResult, $result, 1.0e-14);
+    }
+
+    public function providerTanArray(): array
+    {
+        return [
+            'row vector' => [[[1.55740772465490, 0.54630248984379, -1.55740772465490]], '{1, 0.5, -1}'],
+            'column vector' => [[[1.55740772465490], [0.54630248984379], [-1.55740772465490]], '{1; 0.5; -1}'],
+            'matrix' => [[[1.55740772465490, 0.54630248984379], [0.0, -1.55740772465490]], '{1, 0.5; 0, -1}'],
+        ];
     }
 }

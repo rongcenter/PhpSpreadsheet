@@ -4,10 +4,14 @@ namespace PhpOffice\PhpSpreadsheet\Calculation\Engineering;
 
 use Complex\Complex as ComplexObject;
 use Complex\Exception as ComplexException;
-use PhpOffice\PhpSpreadsheet\Calculation\Functions;
+use PhpOffice\PhpSpreadsheet\Calculation\ArrayEnabled;
+use PhpOffice\PhpSpreadsheet\Calculation\Exception;
+use PhpOffice\PhpSpreadsheet\Calculation\Information\ExcelError;
 
 class Complex
 {
+    use ArrayEnabled;
+
     /**
      * COMPLEX.
      *
@@ -16,29 +20,42 @@ class Complex
      * Excel Function:
      *        COMPLEX(realNumber,imaginary[,suffix])
      *
-     * @param float $realNumber the real coefficient of the complex number
-     * @param float $imaginary the imaginary coefficient of the complex number
-     * @param string $suffix The suffix for the imaginary component of the complex number.
-     *                                        If omitted, the suffix is assumed to be "i".
+     * @param mixed $realNumber the real float coefficient of the complex number
+     *                      Or can be an array of values
+     * @param mixed $imaginary the imaginary float coefficient of the complex number
+     *                      Or can be an array of values
+     * @param mixed $suffix The character suffix for the imaginary component of the complex number.
+     *                          If omitted, the suffix is assumed to be "i".
+     *                      Or can be an array of values
      *
-     * @return string
+     * @return array|string
+     *         If an array of numbers is passed as an argument, then the returned result will also be an array
+     *            with the same dimensions
      */
     public static function COMPLEX($realNumber = 0.0, $imaginary = 0.0, $suffix = 'i')
     {
-        $realNumber = ($realNumber === null) ? 0.0 : Functions::flattenSingleValue($realNumber);
-        $imaginary = ($imaginary === null) ? 0.0 : Functions::flattenSingleValue($imaginary);
-        $suffix = ($suffix === null) ? 'i' : Functions::flattenSingleValue($suffix);
+        if (is_array($realNumber) || is_array($imaginary) || is_array($suffix)) {
+            return self::evaluateArrayArguments([self::class, __FUNCTION__], $realNumber, $imaginary, $suffix);
+        }
 
-        if (
-            ((is_numeric($realNumber)) && (is_numeric($imaginary))) &&
-            (($suffix == 'i') || ($suffix == 'j') || ($suffix == ''))
-        ) {
+        $realNumber = $realNumber ?? 0.0;
+        $imaginary = $imaginary ?? 0.0;
+        $suffix = $suffix ?? 'i';
+
+        try {
+            $realNumber = EngineeringValidations::validateFloat($realNumber);
+            $imaginary = EngineeringValidations::validateFloat($imaginary);
+        } catch (Exception $e) {
+            return $e->getMessage();
+        }
+
+        if (($suffix == 'i') || ($suffix == 'j') || ($suffix == '')) {
             $complex = new ComplexObject($realNumber, $imaginary, $suffix);
 
             return (string) $complex;
         }
 
-        return Functions::VALUE();
+        return ExcelError::VALUE();
     }
 
     /**
@@ -49,19 +66,24 @@ class Complex
      * Excel Function:
      *        IMAGINARY(complexNumber)
      *
-     * @param string $complexNumber the complex number for which you want the imaginary
+     * @param array|string $complexNumber the complex number for which you want the imaginary
      *                                         coefficient
+     *                      Or can be an array of values
      *
-     * @return float|string
+     * @return array|float|string (string if an error)
+     *         If an array of numbers is passed as an argument, then the returned result will also be an array
+     *            with the same dimensions
      */
     public static function IMAGINARY($complexNumber)
     {
-        $complexNumber = Functions::flattenSingleValue($complexNumber);
+        if (is_array($complexNumber)) {
+            return self::evaluateSingleArgumentArray([self::class, __FUNCTION__], $complexNumber);
+        }
 
         try {
             $complex = new ComplexObject($complexNumber);
         } catch (ComplexException $e) {
-            return Functions::NAN();
+            return ExcelError::NAN();
         }
 
         return $complex->getImaginary();
@@ -75,18 +97,23 @@ class Complex
      * Excel Function:
      *        IMREAL(complexNumber)
      *
-     * @param string $complexNumber the complex number for which you want the real coefficient
+     * @param array|string $complexNumber the complex number for which you want the real coefficient
+     *                      Or can be an array of values
      *
-     * @return float|string
+     * @return array|float|string (string if an error)
+     *         If an array of numbers is passed as an argument, then the returned result will also be an array
+     *            with the same dimensions
      */
     public static function IMREAL($complexNumber)
     {
-        $complexNumber = Functions::flattenSingleValue($complexNumber);
+        if (is_array($complexNumber)) {
+            return self::evaluateSingleArgumentArray([self::class, __FUNCTION__], $complexNumber);
+        }
 
         try {
             $complex = new ComplexObject($complexNumber);
         } catch (ComplexException $e) {
-            return Functions::NAN();
+            return ExcelError::NAN();
         }
 
         return $complex->getReal();

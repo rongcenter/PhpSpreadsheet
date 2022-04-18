@@ -2,19 +2,27 @@
 
 namespace PhpOffice\PhpSpreadsheetTests\Shared;
 
+use DateTimeZone;
+use PhpOffice\PhpSpreadsheet\Exception;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 use PHPUnit\Framework\TestCase;
 
 class DateTest extends TestCase
 {
+    /**
+     * @var int
+     */
     private $excelCalendar;
 
+    /**
+     * @var null|DateTimeZone
+     */
     private $dttimezone;
 
     protected function setUp(): void
     {
-        $this->dttimezone = Date::getDefaultTimeZone();
+        $this->dttimezone = Date::getDefaultTimeZoneOrNull();
         $this->excelCalendar = Date::getExcelCalendar();
     }
 
@@ -61,7 +69,7 @@ class DateTest extends TestCase
         self::assertEquals($expectedResult, $result);
     }
 
-    public function providerDateTimeExcelToTimestamp1900()
+    public function providerDateTimeExcelToTimestamp1900(): array
     {
         return require 'tests/data/Shared/Date/ExcelToTimestamp1900.php';
     }
@@ -80,7 +88,7 @@ class DateTest extends TestCase
         self::assertEqualsWithDelta($expectedResult, $result, 1E-5);
     }
 
-    public function providerDateTimeTimestampToExcel1900()
+    public function providerDateTimeTimestampToExcel1900(): array
     {
         return require 'tests/data/Shared/Date/TimestampToExcel1900.php';
     }
@@ -99,7 +107,7 @@ class DateTest extends TestCase
         self::assertEqualsWithDelta($expectedResult, $result, 1E-5);
     }
 
-    public function providerDateTimeDateTimeToExcel()
+    public function providerDateTimeDateTimeToExcel(): array
     {
         return require 'tests/data/Shared/Date/DateTimeToExcel.php';
     }
@@ -117,7 +125,7 @@ class DateTest extends TestCase
         self::assertEqualsWithDelta($expectedResult, $result, 1E-5);
     }
 
-    public function providerDateTimeFormattedPHPToExcel1900()
+    public function providerDateTimeFormattedPHPToExcel1900(): array
     {
         return require 'tests/data/Shared/Date/FormattedPHPToExcel1900.php';
     }
@@ -139,7 +147,7 @@ class DateTest extends TestCase
         self::assertEquals($expectedResult, $result);
     }
 
-    public function providerDateTimeExcelToTimestamp1904()
+    public function providerDateTimeExcelToTimestamp1904(): array
     {
         return require 'tests/data/Shared/Date/ExcelToTimestamp1904.php';
     }
@@ -158,7 +166,7 @@ class DateTest extends TestCase
         self::assertEqualsWithDelta($expectedResult, $result, 1E-5);
     }
 
-    public function providerDateTimeTimestampToExcel1904()
+    public function providerDateTimeTimestampToExcel1904(): array
     {
         return require 'tests/data/Shared/Date/TimestampToExcel1904.php';
     }
@@ -168,13 +176,13 @@ class DateTest extends TestCase
      *
      * @param mixed $expectedResult
      */
-    public function testIsDateTimeFormatCode($expectedResult, ...$args): void
+    public function testIsDateTimeFormatCode($expectedResult, string $format): void
     {
-        $result = Date::isDateTimeFormatCode(...$args);
+        $result = Date::isDateTimeFormatCode($format);
         self::assertEquals($expectedResult, $result);
     }
 
-    public function providerIsDateTimeFormatCode()
+    public function providerIsDateTimeFormatCode(): array
     {
         return require 'tests/data/Shared/Date/FormatCodes.php';
     }
@@ -197,9 +205,18 @@ class DateTest extends TestCase
         self::assertEquals($expectedResult, $result);
     }
 
-    public function providerDateTimeExcelToTimestamp1900Timezone()
+    public function providerDateTimeExcelToTimestamp1900Timezone(): array
     {
         return require 'tests/data/Shared/Date/ExcelToTimestamp1900Timezone.php';
+    }
+
+    public function testConvertIsoDateError(): void
+    {
+        Date::setExcelCalendar(Date::CALENDAR_WINDOWS_1900);
+
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('Non-string value supplied for Iso Date conversion');
+        Date::convertIsoDate(false);
     }
 
     public function testVarious(): void

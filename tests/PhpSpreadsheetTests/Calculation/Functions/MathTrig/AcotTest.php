@@ -2,11 +2,9 @@
 
 namespace PhpOffice\PhpSpreadsheetTests\Calculation\Functions\MathTrig;
 
-use PhpOffice\PhpSpreadsheet\Calculation\Exception as CalcExp;
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PHPUnit\Framework\TestCase;
+use PhpOffice\PhpSpreadsheet\Calculation\Calculation;
 
-class AcotTest extends TestCase
+class AcotTest extends AllSetupTeardown
 {
     /**
      * @dataProvider providerACOT
@@ -16,11 +14,8 @@ class AcotTest extends TestCase
      */
     public function testACOT($expectedResult, $number): void
     {
-        if ($expectedResult === 'exception') {
-            $this->expectException(CalcExp::class);
-        }
-        $spreadsheet = new Spreadsheet();
-        $sheet = $spreadsheet->getActiveSheet();
+        $this->mightHaveException($expectedResult);
+        $sheet = $this->getSheet();
         $sheet->setCellValue('A2', 1.3);
         $sheet->setCellValue('A3', 2.7);
         $sheet->setCellValue('A4', -3.8);
@@ -30,8 +25,29 @@ class AcotTest extends TestCase
         self::assertEqualsWithDelta($expectedResult, $result, 1E-9);
     }
 
-    public function providerACOT()
+    public function providerACOT(): array
     {
         return require 'tests/data/Calculation/MathTrig/ACOT.php';
+    }
+
+    /**
+     * @dataProvider providerAcotArray
+     */
+    public function testAcotArray(array $expectedResult, string $array): void
+    {
+        $calculation = Calculation::getInstance();
+
+        $formula = "=ACOT({$array})";
+        $result = $calculation->_calculateFormulaValue($formula);
+        self::assertEqualsWithDelta($expectedResult, $result, 1.0e-14);
+    }
+
+    public function providerAcotArray(): array
+    {
+        return [
+            'row vector' => [[[0.78539816339745, 1.10714871779409, 2.35619449019234]], '{1, 0.5, -1}'],
+            'column vector' => [[[0.78539816339745], [1.10714871779409], [2.35619449019234]], '{1; 0.5; -1}'],
+            'matrix' => [[[0.78539816339745, 1.10714871779409], [1.57079632679490, 2.35619449019234]], '{1, 0.5; 0, -1}'],
+        ];
     }
 }

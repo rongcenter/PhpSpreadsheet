@@ -4,6 +4,7 @@ namespace PhpOffice\PhpSpreadsheet\Calculation\Financial;
 
 use PhpOffice\PhpSpreadsheet\Calculation\Exception;
 use PhpOffice\PhpSpreadsheet\Calculation\Functions;
+use PhpOffice\PhpSpreadsheet\Calculation\Information\ExcelError;
 
 class Depreciation
 {
@@ -20,15 +21,15 @@ class Depreciation
      * Excel Function:
      *        DB(cost,salvage,life,period[,month])
      *
-     * @param float $cost Initial cost of the asset
-     * @param float $salvage Value at the end of the depreciation.
-     *                                (Sometimes called the salvage value of the asset)
-     * @param int $life Number of periods over which the asset is depreciated.
-     *                                (Sometimes called the useful life of the asset)
-     * @param int $period The period for which you want to calculate the
-     *                                depreciation. Period must use the same units as life.
-     * @param int $month Number of months in the first year. If month is omitted,
-     *                                it defaults to 12.
+     * @param mixed $cost Initial cost of the asset
+     * @param mixed $salvage Value at the end of the depreciation.
+     *                             (Sometimes called the salvage value of the asset)
+     * @param mixed $life Number of periods over which the asset is depreciated.
+     *                           (Sometimes called the useful life of the asset)
+     * @param mixed $period The period for which you want to calculate the
+     *                          depreciation. Period must use the same units as life.
+     * @param mixed $month Number of months in the first year. If month is omitted,
+     *                         it defaults to 12.
      *
      * @return float|string
      */
@@ -85,14 +86,14 @@ class Depreciation
      * Excel Function:
      *        DDB(cost,salvage,life,period[,factor])
      *
-     * @param float $cost Initial cost of the asset
-     * @param float $salvage Value at the end of the depreciation.
+     * @param mixed $cost Initial cost of the asset
+     * @param mixed $salvage Value at the end of the depreciation.
      *                                (Sometimes called the salvage value of the asset)
-     * @param int $life Number of periods over which the asset is depreciated.
+     * @param mixed $life Number of periods over which the asset is depreciated.
      *                                (Sometimes called the useful life of the asset)
-     * @param int $period The period for which you want to calculate the
+     * @param mixed $period The period for which you want to calculate the
      *                                depreciation. Period must use the same units as life.
-     * @param float $factor The rate at which the balance declines.
+     * @param mixed $factor The rate at which the balance declines.
      *                                If factor is omitted, it is assumed to be 2 (the
      *                                double-declining balance method).
      *
@@ -117,7 +118,7 @@ class Depreciation
         }
 
         if ($period > $life) {
-            return Functions::NAN();
+            return ExcelError::NAN();
         }
 
         // Loop through each period calculating the depreciation
@@ -125,7 +126,10 @@ class Depreciation
         $previousDepreciation = 0;
         $depreciation = 0;
         for ($per = 1; $per <= $period; ++$per) {
-            $depreciation = min(($cost - $previousDepreciation) * ($factor / $life), ($cost - $salvage - $previousDepreciation));
+            $depreciation = min(
+                ($cost - $previousDepreciation) * ($factor / $life),
+                ($cost - $salvage - $previousDepreciation)
+            );
             $previousDepreciation += $depreciation;
         }
 
@@ -158,7 +162,7 @@ class Depreciation
         }
 
         if ($life === 0.0) {
-            return Functions::DIV0();
+            return ExcelError::DIV0();
         }
 
         return ($cost - $salvage) / $life;
@@ -193,7 +197,7 @@ class Depreciation
         }
 
         if ($period > $life) {
-            return Functions::NAN();
+            return ExcelError::NAN();
         }
 
         $syd = (($cost - $salvage) * ($life - $period + 1) * 2) / ($life * ($life + 1));
@@ -203,13 +207,9 @@ class Depreciation
 
     private static function validateCost($cost, bool $negativeValueAllowed = false): float
     {
-        if (!is_numeric($cost)) {
-            throw new Exception(Functions::VALUE());
-        }
-
-        $cost = (float) $cost;
+        $cost = FinancialValidations::validateFloat($cost);
         if ($cost < 0.0 && $negativeValueAllowed === false) {
-            throw new Exception(Functions::NAN());
+            throw new Exception(ExcelError::NAN());
         }
 
         return $cost;
@@ -217,13 +217,9 @@ class Depreciation
 
     private static function validateSalvage($salvage, bool $negativeValueAllowed = false): float
     {
-        if (!is_numeric($salvage)) {
-            throw new Exception(Functions::VALUE());
-        }
-
-        $salvage = (float) $salvage;
+        $salvage = FinancialValidations::validateFloat($salvage);
         if ($salvage < 0.0 && $negativeValueAllowed === false) {
-            throw new Exception(Functions::NAN());
+            throw new Exception(ExcelError::NAN());
         }
 
         return $salvage;
@@ -231,13 +227,9 @@ class Depreciation
 
     private static function validateLife($life, bool $negativeValueAllowed = false): float
     {
-        if (!is_numeric($life)) {
-            throw new Exception(Functions::VALUE());
-        }
-
-        $life = (float) $life;
+        $life = FinancialValidations::validateFloat($life);
         if ($life < 0.0 && $negativeValueAllowed === false) {
-            throw new Exception(Functions::NAN());
+            throw new Exception(ExcelError::NAN());
         }
 
         return $life;
@@ -245,13 +237,9 @@ class Depreciation
 
     private static function validatePeriod($period, bool $negativeValueAllowed = false): float
     {
-        if (!is_numeric($period)) {
-            throw new Exception(Functions::VALUE());
-        }
-
-        $period = (float) $period;
+        $period = FinancialValidations::validateFloat($period);
         if ($period <= 0.0 && $negativeValueAllowed === false) {
-            throw new Exception(Functions::NAN());
+            throw new Exception(ExcelError::NAN());
         }
 
         return $period;
@@ -259,13 +247,9 @@ class Depreciation
 
     private static function validateMonth($month): int
     {
-        if (!is_numeric($month)) {
-            throw new Exception(Functions::VALUE());
-        }
-
-        $month = (int) $month;
+        $month = FinancialValidations::validateInt($month);
         if ($month < 1) {
-            throw new Exception(Functions::NAN());
+            throw new Exception(ExcelError::NAN());
         }
 
         return $month;
@@ -273,13 +257,9 @@ class Depreciation
 
     private static function validateFactor($factor): float
     {
-        if (!is_numeric($factor)) {
-            throw new Exception(Functions::VALUE());
-        }
-
-        $factor = (float) $factor;
+        $factor = FinancialValidations::validateFloat($factor);
         if ($factor <= 0.0) {
-            throw new Exception(Functions::NAN());
+            throw new Exception(ExcelError::NAN());
         }
 
         return $factor;

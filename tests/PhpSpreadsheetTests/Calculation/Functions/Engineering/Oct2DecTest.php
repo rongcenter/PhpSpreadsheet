@@ -2,6 +2,7 @@
 
 namespace PhpOffice\PhpSpreadsheetTests\Calculation\Functions\Engineering;
 
+use PhpOffice\PhpSpreadsheet\Calculation\Calculation;
 use PhpOffice\PhpSpreadsheet\Calculation\Exception as CalcExp;
 use PhpOffice\PhpSpreadsheet\Calculation\Functions;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -9,6 +10,9 @@ use PHPUnit\Framework\TestCase;
 
 class Oct2DecTest extends TestCase
 {
+    /**
+     * @var string
+     */
     private $compatibilityMode;
 
     protected function setUp(): void
@@ -40,7 +44,7 @@ class Oct2DecTest extends TestCase
         self::assertEquals($expectedResult, $result);
     }
 
-    public function providerOCT2DEC()
+    public function providerOCT2DEC(): array
     {
         return require 'tests/data/Calculation/Engineering/OCT2DEC.php';
     }
@@ -86,5 +90,27 @@ class Oct2DecTest extends TestCase
         $cell = 'E1';
         $sheet->setCellValue($cell, '=OCT2DEC(10.1)');
         self::assertEquals('#NUM!', $sheet->getCell($cell)->getCalculatedValue());
+    }
+
+    /**
+     * @dataProvider providerOct2DecArray
+     */
+    public function testOct2DecArray(array $expectedResult, string $value): void
+    {
+        $calculation = Calculation::getInstance();
+
+        $formula = "=OCT2DEC({$value})";
+        $result = $calculation->_calculateFormulaValue($formula);
+        self::assertEquals($expectedResult, $result);
+    }
+
+    public function providerOct2DecArray(): array
+    {
+        return [
+            'row/column vector' => [
+                [[4, 7, 63, 153, 204, 341]],
+                '{"4", "7", "77", "231", "314", "525"}',
+            ],
+        ];
     }
 }

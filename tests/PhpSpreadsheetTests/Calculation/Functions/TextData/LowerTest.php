@@ -2,30 +2,32 @@
 
 namespace PhpOffice\PhpSpreadsheetTests\Calculation\Functions\TextData;
 
-use PhpOffice\PhpSpreadsheet\Calculation\TextData;
+use PhpOffice\PhpSpreadsheet\Calculation\Calculation;
 use PhpOffice\PhpSpreadsheet\Settings;
-use PHPUnit\Framework\TestCase;
 
-class LowerTest extends TestCase
+class LowerTest extends AllSetupTeardown
 {
-    protected function tearDown(): void
-    {
-        Settings::setLocale('en_US');
-    }
-
     /**
      * @dataProvider providerLOWER
      *
      * @param mixed $expectedResult
-     * @param $value
+     * @param mixed $str
      */
-    public function testLOWER($expectedResult, $value): void
+    public function testLOWER($expectedResult, $str = 'omitted'): void
     {
-        $result = TextData::LOWERCASE($value);
+        $this->mightHaveException($expectedResult);
+        $sheet = $this->getSheet();
+        if ($str === 'omitted') {
+            $sheet->getCell('B1')->setValue('=LOWER()');
+        } else {
+            $this->setCell('A1', $str);
+            $sheet->getCell('B1')->setValue('=LOWER(A1)');
+        }
+        $result = $sheet->getCell('B1')->getCalculatedValue();
         self::assertEquals($expectedResult, $result);
     }
 
-    public function providerLOWER()
+    public function providerLOWER(): array
     {
         return require 'tests/data/Calculation/TextData/LOWER.php';
     }
@@ -34,24 +36,23 @@ class LowerTest extends TestCase
      * @dataProvider providerLocaleLOWER
      *
      * @param string $expectedResult
-     * @param $value
+     * @param mixed $value
      * @param mixed $locale
      */
     public function testLowerWithLocaleBoolean($expectedResult, $locale, $value): void
     {
         $newLocale = Settings::setLocale($locale);
         if ($newLocale === false) {
-            Settings::setLocale('en_US');
             self::markTestSkipped('Unable to set locale for locale-specific test');
         }
-
-        $result = TextData::LOWERCASE($value);
+        $sheet = $this->getSheet();
+        $this->setCell('A1', $value);
+        $sheet->getCell('B1')->setValue('=LOWER(A1)');
+        $result = $sheet->getCell('B1')->getCalculatedValue();
         self::assertEquals($expectedResult, $result);
-
-        Settings::setLocale('en_US');
     }
 
-    public function providerLocaleLOWER()
+    public function providerLocaleLOWER(): array
     {
         return [
             ['vrai', 'fr_FR', true],
@@ -62,6 +63,27 @@ class LowerTest extends TestCase
             ['onwaar', 'nl_NL', false],
             ['epätosi', 'fi', false],
             ['ложь', 'bg', false],
+        ];
+    }
+
+    /**
+     * @dataProvider providerLowerArray
+     */
+    public function testLowerArray(array $expectedResult, string $array): void
+    {
+        $calculation = Calculation::getInstance();
+
+        $formula = "=LOWER({$array})";
+        $result = $calculation->_calculateFormulaValue($formula);
+        self::assertEqualsWithDelta($expectedResult, $result, 1.0e-14);
+    }
+
+    public function providerLowerArray(): array
+    {
+        return [
+            'row vector' => [[["let's", 'all change', 'case']], '{"lEt\'S", "aLl chAngE", "cAsE"}'],
+            'column vector' => [[["let's"], ['all change'], ['case']], '{"lEt\'S"; "aLl chAngE"; "cAsE"}'],
+            'matrix' => [[['build all', 'your workbooks'], ['with', 'phpspreadsheet']], '{"bUIld aLL", "yOUr WOrkBOOks"; "wiTH", "PhpSpreadsheet"}'],
         ];
     }
 }

@@ -2,11 +2,9 @@
 
 namespace PhpOffice\PhpSpreadsheetTests\Calculation\Functions\MathTrig;
 
-use PhpOffice\PhpSpreadsheet\Calculation\Exception as CalcExp;
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PHPUnit\Framework\TestCase;
+use PhpOffice\PhpSpreadsheet\Calculation\Calculation;
 
-class CotTest extends TestCase
+class CotTest extends AllSetupTeardown
 {
     /**
      * @dataProvider providerCOT
@@ -16,11 +14,8 @@ class CotTest extends TestCase
      */
     public function testCOT($expectedResult, $angle): void
     {
-        if ($expectedResult === 'exception') {
-            $this->expectException(CalcExp::class);
-        }
-        $spreadsheet = new Spreadsheet();
-        $sheet = $spreadsheet->getActiveSheet();
+        $this->mightHaveException($expectedResult);
+        $sheet = $this->getSheet();
         $sheet->setCellValue('A2', 1.3);
         $sheet->setCellValue('A3', 2.7);
         $sheet->setCellValue('A4', -3.8);
@@ -30,8 +25,29 @@ class CotTest extends TestCase
         self::assertEqualsWithDelta($expectedResult, $result, 1E-9);
     }
 
-    public function providerCOT()
+    public function providerCOT(): array
     {
         return require 'tests/data/Calculation/MathTrig/COT.php';
+    }
+
+    /**
+     * @dataProvider providerCotArray
+     */
+    public function testCotArray(array $expectedResult, string $array): void
+    {
+        $calculation = Calculation::getInstance();
+
+        $formula = "=COT({$array})";
+        $result = $calculation->_calculateFormulaValue($formula);
+        self::assertEqualsWithDelta($expectedResult, $result, 1.0e-14);
+    }
+
+    public function providerCotArray(): array
+    {
+        return [
+            'row vector' => [[[0.64209261593433, 1.83048772171245, -0.64209261593433]], '{1, 0.5, -1}'],
+            'column vector' => [[[0.64209261593433], [1.83048772171245], [-0.64209261593433]], '{1; 0.5; -1}'],
+            'matrix' => [[[0.64209261593433, 1.83048772171245], ['#DIV/0!', -0.64209261593433]], '{1, 0.5; 0, -1}'],
+        ];
     }
 }

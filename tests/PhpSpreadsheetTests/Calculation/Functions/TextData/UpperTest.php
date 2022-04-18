@@ -2,30 +2,32 @@
 
 namespace PhpOffice\PhpSpreadsheetTests\Calculation\Functions\TextData;
 
-use PhpOffice\PhpSpreadsheet\Calculation\TextData;
+use PhpOffice\PhpSpreadsheet\Calculation\Calculation;
 use PhpOffice\PhpSpreadsheet\Settings;
-use PHPUnit\Framework\TestCase;
 
-class UpperTest extends TestCase
+class UpperTest extends AllSetupTeardown
 {
-    protected function tearDown(): void
-    {
-        Settings::setLocale('en_US');
-    }
-
     /**
      * @dataProvider providerUPPER
      *
      * @param mixed $expectedResult
-     * @param $value
+     * @param mixed $str
      */
-    public function testUPPER($expectedResult, $value): void
+    public function testUPPER($expectedResult, $str = 'omitted'): void
     {
-        $result = TextData::UPPERCASE($value);
+        $this->mightHaveException($expectedResult);
+        $sheet = $this->getSheet();
+        if ($str === 'omitted') {
+            $sheet->getCell('B1')->setValue('=UPPER()');
+        } else {
+            $this->setCell('A1', $str);
+            $sheet->getCell('B1')->setValue('=UPPER(A1)');
+        }
+        $result = $sheet->getCell('B1')->getCalculatedValue();
         self::assertEquals($expectedResult, $result);
     }
 
-    public function providerUPPER()
+    public function providerUPPER(): array
     {
         return require 'tests/data/Calculation/TextData/UPPER.php';
     }
@@ -34,24 +36,23 @@ class UpperTest extends TestCase
      * @dataProvider providerLocaleLOWER
      *
      * @param string $expectedResult
-     * @param $value
+     * @param mixed $value
      * @param mixed $locale
      */
     public function testLowerWithLocaleBoolean($expectedResult, $locale, $value): void
     {
         $newLocale = Settings::setLocale($locale);
         if ($newLocale === false) {
-            Settings::setLocale('en_US');
             self::markTestSkipped('Unable to set locale for locale-specific test');
         }
-
-        $result = TextData::UPPERCASE($value);
+        $sheet = $this->getSheet();
+        $this->setCell('A1', $value);
+        $sheet->getCell('B1')->setValue('=UPPER(A1)');
+        $result = $sheet->getCell('B1')->getCalculatedValue();
         self::assertEquals($expectedResult, $result);
-
-        Settings::setLocale('en_US');
     }
 
-    public function providerLocaleLOWER()
+    public function providerLocaleLOWER(): array
     {
         return [
             ['VRAI', 'fr_FR', true],
@@ -62,6 +63,27 @@ class UpperTest extends TestCase
             ['ONWAAR', 'nl_NL', false],
             ['EPÄTOSI', 'fi', false],
             ['ЛОЖЬ', 'bg', false],
+        ];
+    }
+
+    /**
+     * @dataProvider providerUpperArray
+     */
+    public function testUpperArray(array $expectedResult, string $array): void
+    {
+        $calculation = Calculation::getInstance();
+
+        $formula = "=UPPER({$array})";
+        $result = $calculation->_calculateFormulaValue($formula);
+        self::assertEqualsWithDelta($expectedResult, $result, 1.0e-14);
+    }
+
+    public function providerUpperArray(): array
+    {
+        return [
+            'row vector' => [[["LET'S", 'ALL CHANGE', 'CASE']], '{"lEt\'S", "aLl chAngE", "cAsE"}'],
+            'column vector' => [[["LET'S"], ['ALL CHANGE'], ['CASE']], '{"lEt\'S"; "aLl chAngE"; "cAsE"}'],
+            'matrix' => [[['BUILD ALL', 'YOUR WORKBOOKS'], ['WITH', 'PHPSPREADSHEET']], '{"bUIld aLL", "yOUr WOrkBOOks"; "wiTH", "PhpSpreadsheet"}'],
         ];
     }
 }

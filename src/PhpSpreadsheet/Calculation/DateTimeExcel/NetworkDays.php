@@ -2,12 +2,14 @@
 
 namespace PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel;
 
-use Exception;
+use PhpOffice\PhpSpreadsheet\Calculation\ArrayEnabled;
+use PhpOffice\PhpSpreadsheet\Calculation\Exception;
 use PhpOffice\PhpSpreadsheet\Calculation\Functions;
-use PhpOffice\PhpSpreadsheet\Shared\Date;
 
 class NetworkDays
 {
+    use ArrayEnabled;
+
     /**
      * NETWORKDAYS.
      *
@@ -21,13 +23,28 @@ class NetworkDays
      *
      * @param mixed $startDate Excel date serial value (float), PHP date timestamp (integer),
      *                                            PHP DateTime object, or a standard date string
+     *                         Or can be an array of date values
      * @param mixed $endDate Excel date serial value (float), PHP date timestamp (integer),
      *                                            PHP DateTime object, or a standard date string
+     *                         Or can be an array of date values
+     * @param mixed $dateArgs An array of dates (such as holidays) to exclude from the calculation
      *
-     * @return int|string Interval between the dates
+     * @return array|int|string Interval between the dates
+     *         If an array of values is passed for the $startDate or $endDate arguments, then the returned result
+     *            will also be an array with matching dimensions
      */
-    public static function funcNetworkDays($startDate, $endDate, ...$dateArgs)
+    public static function count($startDate, $endDate, ...$dateArgs)
     {
+        if (is_array($startDate) || is_array($endDate)) {
+            return self::evaluateArrayArgumentsSubset(
+                [self::class, __FUNCTION__],
+                2,
+                $startDate,
+                $endDate,
+                ...$dateArgs
+            );
+        }
+
         try {
             //    Retrieve the mandatory start and end date that are referenced in the function definition
             $sDate = Helpers::getDateValue($startDate);
@@ -55,7 +72,7 @@ class NetworkDays
         $holidayCountedArray = [];
         foreach ($holidayArray as $holidayDate) {
             if (($holidayDate >= $startDate) && ($holidayDate <= $endDate)) {
-                if ((WeekDay::funcWeekDay($holidayDate, 2) < 6) && (!in_array($holidayDate, $holidayCountedArray))) {
+                if ((Week::day($holidayDate, 2) < 6) && (!in_array($holidayDate, $holidayCountedArray))) {
                     --$partWeekDays;
                     $holidayCountedArray[] = $holidayDate;
                 }
@@ -67,7 +84,7 @@ class NetworkDays
 
     private static function calcStartDow(float $startDate): int
     {
-        $startDow = 6 - (int) WeekDay::funcWeekDay($startDate, 2);
+        $startDow = 6 - (int) Week::day($startDate, 2);
         if ($startDow < 0) {
             $startDow = 5;
         }
@@ -77,7 +94,7 @@ class NetworkDays
 
     private static function calcEndDow(float $endDate): int
     {
-        $endDow = (int) WeekDay::funcWeekDay($endDate, 2);
+        $endDow = (int) Week::day($endDate, 2);
         if ($endDow >= 6) {
             $endDow = 0;
         }
@@ -95,7 +112,7 @@ class NetworkDays
         return $partWeekDays;
     }
 
-    private static function applySign(int $result, float $sDate, float $eDate)
+    private static function applySign(int $result, float $sDate, float $eDate): int
     {
         return ($sDate > $eDate) ? -$result : $result;
     }

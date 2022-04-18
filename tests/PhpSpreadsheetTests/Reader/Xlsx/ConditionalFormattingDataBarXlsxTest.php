@@ -31,7 +31,7 @@ class ConditionalFormattingDataBarXlsxTest extends TestCase
     {
         // Make sure conditionals from existing file are maintained across save
         $filename = 'tests/data/Reader/XLSX/conditionalFormattingDataBarTest.xlsx';
-        $outfile = tempnam(File::sysGetTempDir(), 'phpspreadsheet-test');
+        $outfile = File::temporaryFilename();
         $reader = IOFactory::createReader('Xlsx');
         $spreadshee1 = $reader->load($filename);
         $writer = IOFactory::createWriter($spreadshee1, 'Xlsx');
@@ -49,7 +49,7 @@ class ConditionalFormattingDataBarXlsxTest extends TestCase
     public function testNewXlsxConditionalFormattingDataBar(): void
     {
         // Make sure blanks/non-blanks added by PhpSpreadsheet are handled correctly
-        $outfile = tempnam(File::sysGetTempDir(), 'phpspreadsheet-test');
+        $outfile = File::temporaryFilename();
         $spreadshee1 = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
         $sheet = $spreadshee1->getActiveSheet();
         $sheet->setCellValue('A1', 1);
@@ -60,7 +60,9 @@ class ConditionalFormattingDataBarXlsxTest extends TestCase
         $cond1 = new Conditional();
         $cond1->setConditionType(Conditional::CONDITION_DATABAR);
         $cond1->setDataBar(new ConditionalDataBar());
-        $cond1->getDataBar()
+        $dataBar = $cond1->getDataBar();
+        self::assertNotNull($dataBar);
+        $dataBar
             ->setMinimumConditionalFormatValueObject(new ConditionalFormatValueObject('min'))
             ->setMaximumConditionalFormatValueObject(new ConditionalFormatValueObject('max'))
             ->setColor(Color::COLOR_GREEN);
@@ -83,6 +85,7 @@ class ConditionalFormattingDataBarXlsxTest extends TestCase
         self::assertNotEmpty($conditionalRule->getDataBar());
 
         $dataBar = $conditionalRule->getDataBar();
+        self::assertNotNull($dataBar);
         self::assertNotEmpty($dataBar->getMinimumConditionalFormatValueObject());
         self::assertNotEmpty($dataBar->getMaximumConditionalFormatValueObject());
         self::assertEquals('min', $dataBar->getMinimumConditionalFormatValueObject()->getType());
@@ -105,6 +108,7 @@ class ConditionalFormattingDataBarXlsxTest extends TestCase
 
         self::assertNotEmpty($dataBar);
         self::assertEquals(Conditional::CONDITION_DATABAR, $conditionalRule->getConditionType());
+        self::assertNotNull($dataBar);
         self::assertNotEmpty($dataBar->getMinimumConditionalFormatValueObject());
         self::assertNotEmpty($dataBar->getMaximumConditionalFormatValueObject());
         self::assertEquals('min', $dataBar->getMinimumConditionalFormatValueObject()->getType());
@@ -160,6 +164,7 @@ class ConditionalFormattingDataBarXlsxTest extends TestCase
 
         self::assertNotEmpty($dataBar);
         self::assertEquals(Conditional::CONDITION_DATABAR, $conditionalRule->getConditionType());
+        self::assertNotNull($dataBar);
         self::assertNotEmpty($dataBar->getMinimumConditionalFormatValueObject());
         self::assertNotEmpty($dataBar->getMaximumConditionalFormatValueObject());
         self::assertEquals('num', $dataBar->getMinimumConditionalFormatValueObject()->getType());
@@ -218,6 +223,7 @@ class ConditionalFormattingDataBarXlsxTest extends TestCase
 
         self::assertNotEmpty($dataBar);
         self::assertEquals(Conditional::CONDITION_DATABAR, $conditionalRule->getConditionType());
+        self::assertNotNull($dataBar);
         self::assertNotEmpty($dataBar->getMinimumConditionalFormatValueObject());
         self::assertNotEmpty($dataBar->getMaximumConditionalFormatValueObject());
         self::assertEquals('min', $dataBar->getMinimumConditionalFormatValueObject()->getType());
@@ -278,6 +284,7 @@ class ConditionalFormattingDataBarXlsxTest extends TestCase
         self::assertNotEmpty($dataBar);
         self::assertEquals(Conditional::CONDITION_DATABAR, $conditionalRule->getConditionType());
 
+        self::assertNotNull($dataBar);
         self::assertTrue($dataBar->getShowValue());
         self::assertNotEmpty($dataBar->getMinimumConditionalFormatValueObject());
         self::assertNotEmpty($dataBar->getMaximumConditionalFormatValueObject());

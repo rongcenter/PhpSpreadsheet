@@ -4,12 +4,18 @@ namespace PhpOffice\PhpSpreadsheet\Calculation;
 
 use DateTimeInterface;
 
+/**
+ * @deprecated 1.18.0
+ */
 class DateTime
 {
     /**
      * Identify if a year is a leap year or not.
      *
-     * @Deprecated 2.0.0 Use the method isLeapYear in the DateTimeExcel\Helpers class instead
+     * @Deprecated 1.18.0
+     *
+     * @See DateTimeExcel\Helpers::isLeapYear()
+     *      Use the isLeapYear method in the DateTimeExcel\Helpers class instead
      *
      * @param int|string $year The year to test
      *
@@ -23,7 +29,10 @@ class DateTime
     /**
      * getDateValue.
      *
-     * @Deprecated 2.0.0 Use the method getDateValueNoThrow in the DateTimeExcel\Helpers class instead
+     * @Deprecated 1.18.0
+     *
+     * @See DateTimeExcel\Helpers::getDateValue()
+     *      Use the getDateValue method in the DateTimeExcel\Helpers class instead
      *
      * @param mixed $dateValue
      *
@@ -31,7 +40,11 @@ class DateTime
      */
     public static function getDateValue($dateValue)
     {
-        return DateTimeExcel\Helpers::getDateValueNoThrow($dateValue);
+        try {
+            return DateTimeExcel\Helpers::getDateValue($dateValue);
+        } catch (Exception $e) {
+            return $e->getMessage();
+        }
     }
 
     /**
@@ -45,17 +58,20 @@ class DateTime
      * NOTE: When used in a Cell Formula, MS Excel changes the cell format so that it matches the date
      * and time format of your regional settings. PhpSpreadsheet does not change cell formatting in this way.
      *
-     * @Deprecated 2.0.0 Use the funcNow method in the DateTimeExcel\Now class instead
-     *
      * Excel Function:
      *        NOW()
+     *
+     * @Deprecated 1.18.0
+     *
+     * @See DateTimeExcel\Current::now()
+     *      Use the now method in the DateTimeExcel\Current class instead
      *
      * @return mixed Excel date/time serial value, PHP date/time serial value or PHP date/time object,
      *                        depending on the value of the ReturnDateType flag
      */
     public static function DATETIMENOW()
     {
-        return DateTimeExcel\Now::funcNow();
+        return DateTimeExcel\Current::now();
     }
 
     /**
@@ -69,17 +85,20 @@ class DateTime
      * NOTE: When used in a Cell Formula, MS Excel changes the cell format so that it matches the date
      * and time format of your regional settings. PhpSpreadsheet does not change cell formatting in this way.
      *
-     * @Deprecated 2.0.0 Use the funcToday method in the DateTimeExcel\Today class instead
-     *
      * Excel Function:
      *        TODAY()
+     *
+     * @Deprecated 1.18.0
+     *
+     * @See DateTimeExcel\Current::today()
+     *      Use the today method in the DateTimeExcel\Current class instead
      *
      * @return mixed Excel date/time serial value, PHP date/time serial value or PHP date/time object,
      *                        depending on the value of the ReturnDateType flag
      */
     public static function DATENOW()
     {
-        return DateTimeExcel\Today::funcToday();
+        return DateTimeExcel\Current::today();
     }
 
     /**
@@ -90,10 +109,14 @@ class DateTime
      * NOTE: When used in a Cell Formula, MS Excel changes the cell format so that it matches the date
      * format of your regional settings. PhpSpreadsheet does not change cell formatting in this way.
      *
-     * @Deprecated 2.0.0 Use the funcDate method in the DateTimeExcel\Date class instead
      *
      * Excel Function:
      *        DATE(year,month,day)
+     *
+     * @Deprecated 1.18.0
+     *
+     * @See DateTimeExcel\Date::fromYMD()
+     *      Use the fromYMD method in the DateTimeExcel\Date class instead
      *
      * PhpSpreadsheet is a lot more forgiving than MS Excel when passing non numeric values to this function.
      * A Month name or abbreviation (English only at this point) such as 'January' or 'Jan' will still be accepted,
@@ -135,7 +158,7 @@ class DateTime
      */
     public static function DATE($year = 0, $month = 1, $day = 1)
     {
-        return DateTimeExcel\Datefunc::funcDate($year, $month, $day);
+        return DateTimeExcel\Date::fromYMD($year, $month, $day);
     }
 
     /**
@@ -146,10 +169,13 @@ class DateTime
      * NOTE: When used in a Cell Formula, MS Excel changes the cell format so that it matches the time
      * format of your regional settings. PhpSpreadsheet does not change cell formatting in this way.
      *
-     * @Deprecated 2.0.0 Use the funcTime method in the DateTimeExcel\Time class instead
-     *
      * Excel Function:
      *        TIME(hour,minute,second)
+     *
+     * @Deprecated 1.18.0
+     *
+     * @See DateTimeExcel\Time::fromHMS()
+     *      Use the fromHMS method in the DateTimeExcel\Time class instead
      *
      * @param int $hour A number from 0 (zero) to 32767 representing the hour.
      *                                    Any value greater than 23 will be divided by 24 and the remainder
@@ -168,7 +194,7 @@ class DateTime
      */
     public static function TIME($hour = 0, $minute = 0, $second = 0)
     {
-        return DateTimeExcel\Time::funcTime($hour, $minute, $second);
+        return DateTimeExcel\Time::fromHMS($hour, $minute, $second);
     }
 
     /**
@@ -181,10 +207,13 @@ class DateTime
      * NOTE: When used in a Cell Formula, MS Excel changes the cell format so that it matches the date
      * format of your regional settings. PhpSpreadsheet does not change cell formatting in this way.
      *
-     * @Deprecated 2.0.0 Use the funcDateValue method in the DateTimeExcel\DateValue class instead
-     *
      * Excel Function:
      *        DATEVALUE(dateValue)
+     *
+     * @Deprecated 1.18.0
+     *
+     * @See DateTimeExcel\DateValue::fromString()
+     *      Use the fromString method in the DateTimeExcel\DateValue class instead
      *
      * @param string $dateValue Text that represents a date in a Microsoft Excel date format.
      *                                    For example, "1/30/2008" or "30-Jan-2008" are text strings within
@@ -198,9 +227,9 @@ class DateTime
      * @return mixed Excel date/time serial value, PHP date/time serial value or PHP date/time object,
      *                        depending on the value of the ReturnDateType flag
      */
-    public static function DATEVALUE($dateValue = 1)
+    public static function DATEVALUE($dateValue)
     {
-        return DateTimeExcel\DateValue::funcDateValue($dateValue);
+        return DateTimeExcel\DateValue::fromString($dateValue);
     }
 
     /**
@@ -213,10 +242,13 @@ class DateTime
      * NOTE: When used in a Cell Formula, MS Excel changes the cell format so that it matches the time
      * format of your regional settings. PhpSpreadsheet does not change cell formatting in this way.
      *
-     * @Deprecated 2.0.0 Use the funcTimeValue method in the DateTimeExcel\TimeValue class instead
-     *
      * Excel Function:
      *        TIMEVALUE(timeValue)
+     *
+     * @Deprecated 1.18.0
+     *
+     * @See DateTimeExcel\TimeValue::fromString()
+     *      Use the fromString method in the DateTimeExcel\TimeValue class instead
      *
      * @param string $timeValue A text string that represents a time in any one of the Microsoft
      *                                    Excel time formats; for example, "6:45 PM" and "18:45" text strings
@@ -228,25 +260,31 @@ class DateTime
      */
     public static function TIMEVALUE($timeValue)
     {
-        return DateTimeExcel\TimeValue::funcTimeValue($timeValue);
+        return DateTimeExcel\TimeValue::fromString($timeValue);
     }
 
     /**
      * DATEDIF.
      *
-     * @Deprecated 2.0.0 Use the funcDateDif method in the DateTimeExcel\DateDif class instead
+     * Excel Function:
+     *        DATEDIF(startdate, enddate, unit)
+     *
+     * @Deprecated 1.18.0
+     *
+     * @See DateTimeExcel\Difference::interval()
+     *      Use the interval method in the DateTimeExcel\Difference class instead
      *
      * @param mixed $startDate Excel date serial value, PHP date/time stamp, PHP DateTime object
      *                                    or a standard date string
      * @param mixed $endDate Excel date serial value, PHP date/time stamp, PHP DateTime object
      *                                    or a standard date string
-     * @param string $unit
+     * @param array|string $unit
      *
-     * @return int|string Interval between the dates
+     * @return array|int|string Interval between the dates
      */
     public static function DATEDIF($startDate = 0, $endDate = 0, $unit = 'D')
     {
-        return DateTimeExcel\DateDif::funcDateDif($startDate, $endDate, $unit);
+        return DateTimeExcel\Difference::interval($startDate, $endDate, $unit);
     }
 
     /**
@@ -254,21 +292,24 @@ class DateTime
      *
      * Returns the number of days between two dates
      *
-     * @Deprecated 2.0.0 Use the funcDays method in the DateTimeExcel\Days class instead
-     *
      * Excel Function:
      *        DAYS(endDate, startDate)
      *
-     * @param DateTimeInterface|float|int|string $endDate Excel date serial value (float),
+     * @Deprecated 1.18.0
+     *
+     * @See DateTimeExcel\Days::between()
+     *      Use the between method in the DateTimeExcel\Days class instead
+     *
+     * @param array|DateTimeInterface|float|int|string $endDate Excel date serial value (float),
      * PHP date timestamp (integer), PHP DateTime object, or a standard date string
-     * @param DateTimeInterface|float|int|string $startDate Excel date serial value (float),
+     * @param array|DateTimeInterface|float|int|string $startDate Excel date serial value (float),
      * PHP date timestamp (integer), PHP DateTime object, or a standard date string
      *
-     * @return int|string Number of days between start date and end date or an error
+     * @return array|int|string Number of days between start date and end date or an error
      */
     public static function DAYS($endDate = 0, $startDate = 0)
     {
-        return DateTimeExcel\Days::funcDays($endDate, $startDate);
+        return DateTimeExcel\Days::between($endDate, $startDate);
     }
 
     /**
@@ -278,16 +319,19 @@ class DateTime
      * which is used in some accounting calculations. Use this function to help compute payments if
      * your accounting system is based on twelve 30-day months.
      *
-     * @Deprecated 2.0.0 Use the funcDays360 method in the DateTimeExcel\Days360 class instead
-     *
      * Excel Function:
      *        DAYS360(startDate,endDate[,method])
+     *
+     * @Deprecated 1.18.0
+     *
+     * @See DateTimeExcel\Days360::between()
+     *      Use the between method in the DateTimeExcel\Days360 class instead
      *
      * @param mixed $startDate Excel date serial value (float), PHP date timestamp (integer),
      *                                        PHP DateTime object, or a standard date string
      * @param mixed $endDate Excel date serial value (float), PHP date timestamp (integer),
      *                                        PHP DateTime object, or a standard date string
-     * @param bool $method US or European Method
+     * @param array|bool $method US or European Method
      *                                        FALSE or omitted: U.S. (NASD) method. If the starting date is
      *                                        the last day of a month, it becomes equal to the 30th of the
      *                                        same month. If the ending date is the last day of a month and
@@ -299,11 +343,11 @@ class DateTime
      *                                        occur on the 31st of a month become equal to the 30th of the
      *                                        same month.
      *
-     * @return int|string Number of days between start date and end date
+     * @return array|int|string Number of days between start date and end date
      */
     public static function DAYS360($startDate = 0, $endDate = 0, $method = false)
     {
-        return DateTimeExcel\Days360::funcDays360($startDate, $endDate, $method);
+        return DateTimeExcel\Days360::between($startDate, $endDate, $method);
     }
 
     /**
@@ -314,10 +358,14 @@ class DateTime
      * Use the YEARFRAC worksheet function to identify the proportion of a whole year's benefits or
      * obligations to assign to a specific term.
      *
-     * @Deprecated 2.0.0 Use the funcYearFrac method in the DateTimeExcel\YearFrac class instead
-     *
      * Excel Function:
      *        YEARFRAC(startDate,endDate[,method])
+     *
+     * @Deprecated 1.18.0
+     *
+     * @See DateTimeExcel\YearFrac::fraction()
+     *      Use the fraction method in the DateTimeExcel\YearFrac class instead
+     *
      * See https://lists.oasis-open.org/archives/office-formula/200806/msg00039.html
      *     for description of algorithm used in Excel
      *
@@ -325,18 +373,18 @@ class DateTime
      *                                    PHP DateTime object, or a standard date string
      * @param mixed $endDate Excel date serial value (float), PHP date timestamp (integer),
      *                                    PHP DateTime object, or a standard date string
-     * @param int $method Method used for the calculation
+     * @param array|int $method Method used for the calculation
      *                                        0 or omitted    US (NASD) 30/360
      *                                        1                Actual/actual
      *                                        2                Actual/360
      *                                        3                Actual/365
      *                                        4                European 30/360
      *
-     * @return float|string fraction of the year, or a string containing an error
+     * @return array|float|string fraction of the year, or a string containing an error
      */
     public static function YEARFRAC($startDate = 0, $endDate = 0, $method = 0)
     {
-        return DateTimeExcel\YearFrac::funcYearFrac($startDate, $endDate, $method);
+        return DateTimeExcel\YearFrac::fraction($startDate, $endDate, $method);
     }
 
     /**
@@ -347,21 +395,25 @@ class DateTime
      * Use NETWORKDAYS to calculate employee benefits that accrue based on the number of days
      * worked during a specific term.
      *
-     * @Deprecated 2.0.0 Use the funcNetworkDays method in the DateTimeExcel\NetworkDays class instead
-     *
      * Excel Function:
      *        NETWORKDAYS(startDate,endDate[,holidays[,holiday[,...]]])
+     *
+     * @Deprecated 1.18.0
+     *
+     * @See DateTimeExcel\NetworkDays::count()
+     *      Use the count method in the DateTimeExcel\NetworkDays class instead
      *
      * @param mixed $startDate Excel date serial value (float), PHP date timestamp (integer),
      *                                            PHP DateTime object, or a standard date string
      * @param mixed $endDate Excel date serial value (float), PHP date timestamp (integer),
      *                                            PHP DateTime object, or a standard date string
+     * @param mixed $dateArgs
      *
-     * @return int|string Interval between the dates
+     * @return array|int|string Interval between the dates
      */
     public static function NETWORKDAYS($startDate, $endDate, ...$dateArgs)
     {
-        return DateTimeExcel\NetworkDays::funcNetworkDays($startDate, $endDate, ...$dateArgs);
+        return DateTimeExcel\NetworkDays::count($startDate, $endDate, ...$dateArgs);
     }
 
     /**
@@ -372,23 +424,27 @@ class DateTime
      * Use WORKDAY to exclude weekends or holidays when you calculate invoice due dates, expected
      * delivery times, or the number of days of work performed.
      *
-     * @Deprecated 2.0.0 Use the funcWorkDay method in the DateTimeExcel\WorkDay class instead
-     *
      * Excel Function:
      *        WORKDAY(startDate,endDays[,holidays[,holiday[,...]]])
+     *
+     * @Deprecated 1.18.0
+     *
+     * @See DateTimeExcel\WorkDay::date()
+     *      Use the date method in the DateTimeExcel\WorkDay class instead
      *
      * @param mixed $startDate Excel date serial value (float), PHP date timestamp (integer),
      *                                        PHP DateTime object, or a standard date string
      * @param int $endDays The number of nonweekend and nonholiday days before or after
      *                                        startDate. A positive value for days yields a future date; a
      *                                        negative value yields a past date.
+     * @param mixed $dateArgs
      *
      * @return mixed Excel date/time serial value, PHP date/time serial value or PHP date/time object,
      *                        depending on the value of the ReturnDateType flag
      */
     public static function WORKDAY($startDate, $endDays, ...$dateArgs)
     {
-        return DateTimeExcel\WorkDay::funcWorkDay($startDate, $endDays, ...$dateArgs);
+        return DateTimeExcel\WorkDay::date($startDate, $endDays, ...$dateArgs);
     }
 
     /**
@@ -397,19 +453,22 @@ class DateTime
      * Returns the day of the month, for a specified date. The day is given as an integer
      * ranging from 1 to 31.
      *
-     * @Deprecated 2.0.0 Use the funcDay method in the DateTimeExcel\Day class instead
-     *
      * Excel Function:
      *        DAY(dateValue)
+     *
+     * @Deprecated 1.18.0
+     *
+     * @See DateTimeExcel\DateParts::day()
+     *      Use the day method in the DateTimeExcel\DateParts class instead
      *
      * @param mixed $dateValue Excel date serial value (float), PHP date timestamp (integer),
      *                                    PHP DateTime object, or a standard date string
      *
-     * @return int|string Day of the month
+     * @return array|int|string Day of the month
      */
     public static function DAYOFMONTH($dateValue = 1)
     {
-        return DateTimeExcel\Day::funcDay($dateValue);
+        return DateTimeExcel\DateParts::day($dateValue);
     }
 
     /**
@@ -418,10 +477,13 @@ class DateTime
      * Returns the day of the week for a specified date. The day is given as an integer
      * ranging from 0 to 7 (dependent on the requested style).
      *
-     * @Deprecated 2.0.0 Use the funcWeekDay method in the DateTimeExcel\WeekDay class instead
-     *
      * Excel Function:
      *        WEEKDAY(dateValue[,style])
+     *
+     * @Deprecated 1.18.0
+     *
+     * @See DateTimeExcel\Week::day()
+     *      Use the day method in the DateTimeExcel\Week class instead
      *
      * @param float|int|string $dateValue Excel date serial value (float), PHP date timestamp (integer),
      *                                    PHP DateTime object, or a standard date string
@@ -430,17 +492,17 @@ class DateTime
      *                                        2                Numbers 1 (Monday) through 7 (Sunday).
      *                                        3                Numbers 0 (Monday) through 6 (Sunday).
      *
-     * @return int|string Day of the week value
+     * @return array|int|string Day of the week value
      */
     public static function WEEKDAY($dateValue = 1, $style = 1)
     {
-        return DateTimeExcel\WeekDay::funcWeekDay($dateValue, $style);
+        return DateTimeExcel\Week::day($dateValue, $style);
     }
 
     /**
      * STARTWEEK_SUNDAY.
      *
-     * @Deprecated 2.0.0
+     * @Deprecated 1.18.0
      *
      * @see Use DateTimeExcel\Constants\STARTWEEK_SUNDAY instead
      */
@@ -449,7 +511,7 @@ class DateTime
     /**
      * STARTWEEK_MONDAY.
      *
-     * @Deprecated 2.0.0
+     * @Deprecated 1.18.0
      *
      * @see Use DateTimeExcel\Constants\STARTWEEK_MONDAY instead
      */
@@ -458,7 +520,7 @@ class DateTime
     /**
      * STARTWEEK_MONDAY_ALT.
      *
-     * @Deprecated 2.0.0
+     * @Deprecated 1.18.0
      *
      * @see Use DateTimeExcel\Constants\STARTWEEK_MONDAY_ALT instead
      */
@@ -467,7 +529,7 @@ class DateTime
     /**
      * STARTWEEK_TUESDAY.
      *
-     * @Deprecated 2.0.0
+     * @Deprecated 1.18.0
      *
      * @see Use DateTimeExcel\Constants\STARTWEEK_TUESDAY instead
      */
@@ -476,7 +538,7 @@ class DateTime
     /**
      * STARTWEEK_WEDNESDAY.
      *
-     * @Deprecated 2.0.0
+     * @Deprecated 1.18.0
      *
      * @see Use DateTimeExcel\Constants\STARTWEEK_WEDNESDAY instead
      */
@@ -485,7 +547,7 @@ class DateTime
     /**
      * STARTWEEK_THURSDAY.
      *
-     * @Deprecated 2.0.0
+     * @Deprecated 1.18.0
      *
      * @see Use DateTimeExcel\Constants\STARTWEEK_THURSDAY instead
      */
@@ -494,7 +556,7 @@ class DateTime
     /**
      * STARTWEEK_FRIDAY.
      *
-     * @Deprecated 2.0.0
+     * @Deprecated 1.18.0
      *
      * @see Use DateTimeExcel\Constants\STARTWEEK_FRIDAY instead
      */
@@ -503,7 +565,7 @@ class DateTime
     /**
      * STARTWEEK_SATURDAY.
      *
-     * @Deprecated 2.0.0
+     * @Deprecated 1.18.0
      *
      * @see Use DateTimeExcel\Constants\STARTWEEK_SATURDAY instead
      */
@@ -512,7 +574,7 @@ class DateTime
     /**
      * STARTWEEK_SUNDAY_ALT.
      *
-     * @Deprecated 2.0.0
+     * @Deprecated 1.18.0
      *
      * @see Use DateTimeExcel\Constants\STARTWEEK_SUNDAY_ALT instead
      */
@@ -521,7 +583,7 @@ class DateTime
     /**
      * DOW_SUNDAY.
      *
-     * @Deprecated 2.0.0
+     * @Deprecated 1.18.0
      *
      * @see Use DateTimeExcel\Constants\DOW_SUNDAY instead
      */
@@ -530,7 +592,7 @@ class DateTime
     /**
      * DOW_MONDAY.
      *
-     * @Deprecated 2.0.0
+     * @Deprecated 1.18.0
      *
      * @see Use DateTimeExcel\Constants\DOW_MONDAY instead
      */
@@ -539,7 +601,7 @@ class DateTime
     /**
      * DOW_TUESDAY.
      *
-     * @Deprecated 2.0.0
+     * @Deprecated 1.18.0
      *
      * @see Use DateTimeExcel\Constants\DOW_TUESDAY instead
      */
@@ -548,7 +610,7 @@ class DateTime
     /**
      * DOW_WEDNESDAY.
      *
-     * @Deprecated 2.0.0
+     * @Deprecated 1.18.0
      *
      * @see Use DateTimeExcel\Constants\DOW_WEDNESDAY instead
      */
@@ -557,7 +619,7 @@ class DateTime
     /**
      * DOW_THURSDAY.
      *
-     * @Deprecated 2.0.0
+     * @Deprecated 1.18.0
      *
      * @see Use DateTimeExcel\Constants\DOW_THURSDAY instead
      */
@@ -566,7 +628,7 @@ class DateTime
     /**
      * DOW_FRIDAY.
      *
-     * @Deprecated 2.0.0
+     * @Deprecated 1.18.0
      *
      * @see Use DateTimeExcel\Constants\DOW_FRIDAY instead
      */
@@ -575,7 +637,7 @@ class DateTime
     /**
      * DOW_SATURDAY.
      *
-     * @Deprecated 2.0.0
+     * @Deprecated 1.18.0
      *
      * @see Use DateTimeExcel\Constants\DOW_SATURDAY instead
      */
@@ -584,7 +646,7 @@ class DateTime
     /**
      * STARTWEEK_MONDAY_ISO.
      *
-     * @Deprecated 2.0.0
+     * @Deprecated 1.18.0
      *
      * @see Use DateTimeExcel\Constants\STARTWEEK_MONDAY_ISO instead
      */
@@ -593,7 +655,7 @@ class DateTime
     /**
      * METHODARR.
      *
-     * @Deprecated 2.0.0
+     * @Deprecated 1.18.0
      *
      * @see Use DateTimeExcel\Constants\METHODARR instead
      */
@@ -620,10 +682,13 @@ class DateTime
      * three days or less in the first week of January, the WEEKNUM function returns week numbers
      * that are incorrect according to the European standard.
      *
-     * @Deprecated 2.0.0 Use the funcWeekNum method in the DateTimeExcel\WeekNum class instead
-     *
      * Excel Function:
      *        WEEKNUM(dateValue[,style])
+     *
+     * @Deprecated 1.18.0
+     *
+     * @See DateTimeExcel\Week::number(()
+     *      Use the number method in the DateTimeExcel\Week class instead
      *
      * @param mixed $dateValue Excel date serial value (float), PHP date timestamp (integer),
      *                                    PHP DateTime object, or a standard date string
@@ -639,11 +704,11 @@ class DateTime
      *                                        17               Week begins on Sunday.
      *                                        21               ISO (Jan. 4 is week 1, begins on Monday).
      *
-     * @return int|string Week Number
+     * @return array|int|string Week Number
      */
     public static function WEEKNUM($dateValue = 1, $method = self::STARTWEEK_SUNDAY)
     {
-        return DateTimeExcel\WeekNum::funcWeekNum($dateValue, $method);
+        return DateTimeExcel\Week::number($dateValue, $method);
     }
 
     /**
@@ -651,19 +716,22 @@ class DateTime
      *
      * Returns the ISO 8601 week number of the year for a specified date.
      *
-     * @Deprecated 2.0.0 Use the funcIsoWeeknum method in the DateTimeExcel\Isoweeknum class instead
-     *
      * Excel Function:
      *        ISOWEEKNUM(dateValue)
+     *
+     * @Deprecated 1.18.0
+     *
+     * @See DateTimeExcel\Week::isoWeekNumber()
+     *      Use the isoWeekNumber method in the DateTimeExcel\Week class instead
      *
      * @param mixed $dateValue Excel date serial value (float), PHP date timestamp (integer),
      *                                    PHP DateTime object, or a standard date string
      *
-     * @return int|string Week Number
+     * @return array|int|string Week Number
      */
     public static function ISOWEEKNUM($dateValue = 1)
     {
-        return DateTimeExcel\IsoweekNum::funcIsoWeekNum($dateValue);
+        return DateTimeExcel\Week::isoWeekNumber($dateValue);
     }
 
     /**
@@ -672,19 +740,22 @@ class DateTime
      * Returns the month of a date represented by a serial number.
      * The month is given as an integer, ranging from 1 (January) to 12 (December).
      *
-     * @Deprecated 2.0.0 Use the funcMonth method in the DateTimeExcel\Month class instead
-     *
      * Excel Function:
      *        MONTH(dateValue)
+     *
+     * @Deprecated 1.18.0
+     *
+     * @See DateTimeExcel\DateParts::month()
+     *      Use the month method in the DateTimeExcel\DateParts class instead
      *
      * @param mixed $dateValue Excel date serial value (float), PHP date timestamp (integer),
      *                                    PHP DateTime object, or a standard date string
      *
-     * @return int|string Month of the year
+     * @return array|int|string Month of the year
      */
     public static function MONTHOFYEAR($dateValue = 1)
     {
-        return DateTimeExcel\Month::funcMonth($dateValue);
+        return DateTimeExcel\DateParts::month($dateValue);
     }
 
     /**
@@ -693,19 +764,22 @@ class DateTime
      * Returns the year corresponding to a date.
      * The year is returned as an integer in the range 1900-9999.
      *
-     * @Deprecated 2.0.0 Use the funcYear method in the DateTimeExcel\Year class instead
-     *
      * Excel Function:
      *        YEAR(dateValue)
+     *
+     * @Deprecated 1.18.0
+     *
+     * @See DateTimeExcel\DateParts::year()
+     *      Use the ear method in the DateTimeExcel\DateParts class instead
      *
      * @param mixed $dateValue Excel date serial value (float), PHP date timestamp (integer),
      *                                    PHP DateTime object, or a standard date string
      *
-     * @return int|string Year
+     * @return array|int|string Year
      */
     public static function YEAR($dateValue = 1)
     {
-        return DateTimeExcel\Year::funcYear($dateValue);
+        return DateTimeExcel\DateParts::year($dateValue);
     }
 
     /**
@@ -714,19 +788,22 @@ class DateTime
      * Returns the hour of a time value.
      * The hour is given as an integer, ranging from 0 (12:00 A.M.) to 23 (11:00 P.M.).
      *
-     * @Deprecated 2.0.0 Use the funcHour method in the DateTimeExcel\Hour class instead
-     *
      * Excel Function:
      *        HOUR(timeValue)
+     *
+     * @Deprecated 1.18.0
+     *
+     * @See DateTimeExcel\TimeParts::hour()
+     *      Use the hour method in the DateTimeExcel\TimeParts class instead
      *
      * @param mixed $timeValue Excel date serial value (float), PHP date timestamp (integer),
      *                                    PHP DateTime object, or a standard time string
      *
-     * @return int|string Hour
+     * @return array|int|string Hour
      */
     public static function HOUROFDAY($timeValue = 0)
     {
-        return DateTimeExcel\Hour::funcHour($timeValue);
+        return DateTimeExcel\TimeParts::hour($timeValue);
     }
 
     /**
@@ -735,19 +812,22 @@ class DateTime
      * Returns the minutes of a time value.
      * The minute is given as an integer, ranging from 0 to 59.
      *
-     * @Deprecated 2.0.0 Use the funcMinute method in the DateTimeExcel\Minute class instead
-     *
      * Excel Function:
      *        MINUTE(timeValue)
+     *
+     * @Deprecated 1.18.0
+     *
+     * @See DateTimeExcel\TimeParts::minute()
+     *      Use the minute method in the DateTimeExcel\TimeParts class instead
      *
      * @param mixed $timeValue Excel date serial value (float), PHP date timestamp (integer),
      *                                    PHP DateTime object, or a standard time string
      *
-     * @return int|string Minute
+     * @return array|int|string Minute
      */
     public static function MINUTE($timeValue = 0)
     {
-        return DateTimeExcel\Minute::funcMinute($timeValue);
+        return DateTimeExcel\TimeParts::minute($timeValue);
     }
 
     /**
@@ -756,19 +836,22 @@ class DateTime
      * Returns the seconds of a time value.
      * The second is given as an integer in the range 0 (zero) to 59.
      *
-     * @Deprecated 2.0.0 Use the funcSecond method in the DateTimeExcel\Second class instead
-     *
      * Excel Function:
      *        SECOND(timeValue)
+     *
+     * @Deprecated 1.18.0
+     *
+     * @See DateTimeExcel\TimeParts::second()
+     *      Use the second method in the DateTimeExcel\TimeParts class instead
      *
      * @param mixed $timeValue Excel date serial value (float), PHP date timestamp (integer),
      *                                    PHP DateTime object, or a standard time string
      *
-     * @return int|string Second
+     * @return array|int|string Second
      */
     public static function SECOND($timeValue = 0)
     {
-        return DateTimeExcel\Second::funcSecond($timeValue);
+        return DateTimeExcel\TimeParts::second($timeValue);
     }
 
     /**
@@ -779,10 +862,13 @@ class DateTime
      * Use EDATE to calculate maturity dates or due dates that fall on the same day of the month
      * as the date of issue.
      *
-     * @Deprecated 2.0.0 Use the funcEDate method in the DateTimeExcel\EDate class instead
-     *
      * Excel Function:
      *        EDATE(dateValue,adjustmentMonths)
+     *
+     * @Deprecated 1.18.0
+     *
+     * @See DateTimeExcel\Month::adjust()
+     *      Use the adjust method in the DateTimeExcel\Edate class instead
      *
      * @param mixed $dateValue Excel date serial value (float), PHP date timestamp (integer),
      *                                        PHP DateTime object, or a standard date string
@@ -795,7 +881,7 @@ class DateTime
      */
     public static function EDATE($dateValue = 1, $adjustmentMonths = 0)
     {
-        return DateTimeExcel\EDate::funcEDate($dateValue, $adjustmentMonths);
+        return DateTimeExcel\Month::adjust($dateValue, $adjustmentMonths);
     }
 
     /**
@@ -805,10 +891,13 @@ class DateTime
      * before or after start_date.
      * Use EOMONTH to calculate maturity dates or due dates that fall on the last day of the month.
      *
-     * @Deprecated 2.0.0 Use the funcEoMonth method in the DateTimeExcel\EoMonth class instead
-     *
      * Excel Function:
      *        EOMONTH(dateValue,adjustmentMonths)
+     *
+     * @Deprecated 1.18.0
+     *
+     * @See DateTimeExcel\Month::lastDay()
+     *      Use the lastDay method in the DateTimeExcel\EoMonth class instead
      *
      * @param mixed $dateValue Excel date serial value (float), PHP date timestamp (integer),
      *                                        PHP DateTime object, or a standard date string
@@ -821,6 +910,6 @@ class DateTime
      */
     public static function EOMONTH($dateValue = 1, $adjustmentMonths = 0)
     {
-        return DateTimeExcel\EoMonth::funcEoMonth($dateValue, $adjustmentMonths);
+        return DateTimeExcel\Month::lastDay($dateValue, $adjustmentMonths);
     }
 }

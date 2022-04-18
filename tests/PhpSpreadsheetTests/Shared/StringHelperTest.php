@@ -7,10 +7,19 @@ use PHPUnit\Framework\TestCase;
 
 class StringHelperTest extends TestCase
 {
+    /**
+     * @var string
+     */
     private $currencyCode;
 
+    /**
+     * @var string
+     */
     private $decimalSeparator;
 
+    /**
+     * @var string
+     */
     private $thousandsSeparator;
 
     protected function setUp(): void
@@ -19,9 +28,6 @@ class StringHelperTest extends TestCase
         $this->currencyCode = StringHelper::getCurrencyCode();
         $this->decimalSeparator = StringHelper::getDecimalSeparator();
         $this->thousandsSeparator = StringHelper::getThousandsSeparator();
-
-        // Reset Currency Code
-        StringHelper::setCurrencyCode(null);
     }
 
     protected function tearDown(): void
