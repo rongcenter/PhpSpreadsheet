@@ -9,6 +9,32 @@ and this project adheres to [Semantic Versioning](https://semver.org).
 
 ### Added
 
+- Add point size option for scatter charts
+
+### Changed
+
+- Memory and speed improvements, particularly for the Cell Collection, and the Writers.
+
+  See [the Discussion](https://github.com/PHPOffice/PhpSpreadsheet/discussions/2821) for details of performance
+
+### Deprecated
+
+- Nothing
+
+### Removed
+
+- Nothing
+
+### Fixed
+
+- Xls Reader resolving absolute named ranges to relative ranges [Issue #2826](https://github.com/PHPOffice/PhpSpreadsheet/issues/2826) [PR #2827](https://github.com/PHPOffice/PhpSpreadsheet/pull/2827)
+
+
+## 1.23.0 - 2022-04-24
+
+### Added
+
+- Ods Writer support for Freeze Pane [Issue #2013](https://github.com/PHPOffice/PhpSpreadsheet/issues/2013) [PR #2755](https://github.com/PHPOffice/PhpSpreadsheet/pull/2755)
 - Ods Writer support for setting column width/row height (including the use of AutoSize) [Issue #2346](https://github.com/PHPOffice/PhpSpreadsheet/issues/2346) [PR #2753](https://github.com/PHPOffice/PhpSpreadsheet/pull/2753)
 - Introduced CellAddress, CellRange, RowRange and ColumnRange value objects that can be used as an alternative to a string value (e.g. `'C5'`, `'B2:D4'`, `'2:2'` or `'B:C'`) in appropriate contexts.
 - Implementation of the FILTER(), SORT(), SORTBY() and UNIQUE() Lookup/Reference (array) functions.
@@ -25,6 +51,11 @@ and this project adheres to [Semantic Versioning](https://semver.org).
   Ranges and Rules are read, but style is currently limited to font size, weight and color; and to fill style and color.
 
 - Add ability to suppress Mac line ending check for CSV [#2623](https://github.com/PHPOffice/PhpSpreadsheet/pull/2623)
+- Initial support for creating and writing Tables (Xlsx Writer only) [PR #2671](https://github.com/PHPOffice/PhpSpreadsheet/pull/2671)
+
+  See `/samples/Table` for examples of use.
+
+  Note that PreCalculateFormulas needs to be disabled when saving spreadsheets containing tables with formulae (totals or column formulae).
 
 ### Changed
 
@@ -90,6 +121,7 @@ and this project adheres to [Semantic Versioning](https://semver.org).
 - Handle booleans in conditional styles properly [PR #2654](https://github.com/PHPOffice/PhpSpreadsheet/pull/2654)
 - Fix for reading files in the root directory of a ZipFile, which should not be prefixed by relative paths ("./") as dirname($filename) does by default. 
 - Fix invalid style of cells in empty columns with columnDimensions and rows with rowDimensions in added external sheet. [PR #2739](https://github.com/PHPOffice/PhpSpreadsheet/pull/2739)
+- Time Interval Formatting [Issue #2768](https://github.com/PHPOffice/PhpSpreadsheet/issues/2768) [PR #2772](https://github.com/PHPOffice/PhpSpreadsheet/pull/2772)
 
 ## 1.22.0 - 2022-02-18
 

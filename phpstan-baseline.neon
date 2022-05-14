@@ -21,37 +21,12 @@ parameters:
 			path: src/PhpSpreadsheet/Calculation/Calculation.php
 
 		-
-			message: "#^Cannot call method getColumn\\(\\) on PhpOffice\\\\PhpSpreadsheet\\\\Cell\\\\Cell\\|null\\.$#"
-			count: 2
-			path: src/PhpSpreadsheet/Calculation/Calculation.php
-
-		-
-			message: "#^Cannot call method getCoordinate\\(\\) on PhpOffice\\\\PhpSpreadsheet\\\\Cell\\\\Cell\\|null\\.$#"
-			count: 2
-			path: src/PhpSpreadsheet/Calculation/Calculation.php
-
-		-
 			message: "#^Cannot call method getHighestColumn\\(\\) on PhpOffice\\\\PhpSpreadsheet\\\\Worksheet\\\\Worksheet\\|null\\.$#"
 			count: 1
 			path: src/PhpSpreadsheet/Calculation/Calculation.php
 
 		-
 			message: "#^Cannot call method getHighestRow\\(\\) on PhpOffice\\\\PhpSpreadsheet\\\\Worksheet\\\\Worksheet\\|null\\.$#"
-			count: 1
-			path: src/PhpSpreadsheet/Calculation/Calculation.php
-
-		-
-			message: "#^Cannot call method getRow\\(\\) on PhpOffice\\\\PhpSpreadsheet\\\\Cell\\\\Cell\\|null\\.$#"
-			count: 2
-			path: src/PhpSpreadsheet/Calculation/Calculation.php
-
-		-
-			message: "#^Cannot call method getTitle\\(\\) on PhpOffice\\\\PhpSpreadsheet\\\\Worksheet\\\\Worksheet\\|null\\.$#"
-			count: 1
-			path: src/PhpSpreadsheet/Calculation/Calculation.php
-
-		-
-			message: "#^Cannot call method has\\(\\) on PhpOffice\\\\PhpSpreadsheet\\\\Collection\\\\Cells\\|null\\.$#"
 			count: 1
 			path: src/PhpSpreadsheet/Calculation/Calculation.php
 
@@ -137,11 +112,6 @@ parameters:
 
 		-
 			message: "#^Parameter \\#1 \\$haystack of function strpos expects string, float\\|int\\|string given\\.$#"
-			count: 1
-			path: src/PhpSpreadsheet/Calculation/Calculation.php
-
-		-
-			message: "#^Parameter \\#1 \\$parent of method PhpOffice\\\\PhpSpreadsheet\\\\Cell\\\\Cell\\:\\:attach\\(\\) expects PhpOffice\\\\PhpSpreadsheet\\\\Collection\\\\Cells, PhpOffice\\\\PhpSpreadsheet\\\\Collection\\\\Cells\\|null given\\.$#"
 			count: 1
 			path: src/PhpSpreadsheet/Calculation/Calculation.php
 
@@ -389,11 +359,6 @@ parameters:
 			message: "#^Property PhpOffice\\\\PhpSpreadsheet\\\\Calculation\\\\Engineering\\\\ErfC\\:\\:\\$oneSqrtPi has no type specified\\.$#"
 			count: 1
 			path: src/PhpSpreadsheet/Calculation/Engineering/ErfC.php
-
-		-
-			message: "#^Parameter \\#1 \\$callback of function set_error_handler expects \\(callable\\(int, string, string, int, array\\)\\: bool\\)\\|null, array\\{'PhpOffice\\\\\\\\PhpSpreadsheet\\\\\\\\Calculation\\\\\\\\Exception', 'errorHandlerCallback'\\} given\\.$#"
-			count: 1
-			path: src/PhpSpreadsheet/Calculation/ExceptionHandler.php
 
 		-
 			message: "#^Method PhpOffice\\\\PhpSpreadsheet\\\\Calculation\\\\Financial\\:\\:ISPMT\\(\\) has no return type specified\\.$#"
@@ -791,26 +756,6 @@ parameters:
 			path: src/PhpSpreadsheet/Calculation/LookupRef/RowColumnInformation.php
 
 		-
-			message: "#^Method PhpOffice\\\\PhpSpreadsheet\\\\Calculation\\\\LookupRef\\\\VLookup\\:\\:vlookupSort\\(\\) has no return type specified\\.$#"
-			count: 1
-			path: src/PhpSpreadsheet/Calculation/LookupRef/VLookup.php
-
-		-
-			message: "#^Method PhpOffice\\\\PhpSpreadsheet\\\\Calculation\\\\LookupRef\\\\VLookup\\:\\:vlookupSort\\(\\) has parameter \\$a with no type specified\\.$#"
-			count: 1
-			path: src/PhpSpreadsheet/Calculation/LookupRef/VLookup.php
-
-		-
-			message: "#^Method PhpOffice\\\\PhpSpreadsheet\\\\Calculation\\\\LookupRef\\\\VLookup\\:\\:vlookupSort\\(\\) has parameter \\$b with no type specified\\.$#"
-			count: 1
-			path: src/PhpSpreadsheet/Calculation/LookupRef/VLookup.php
-
-		-
-			message: "#^Parameter \\#2 \\$callback of function uasort expects callable\\(T, T\\)\\: int, array\\{'self', 'vlookupSort'\\} given\\.$#"
-			count: 1
-			path: src/PhpSpreadsheet/Calculation/LookupRef/VLookup.php
-
-		-
 			message: "#^Binary operation \"/\" between array\\|float\\|int\\|string and array\\|float\\|int\\|string results in an error\\.$#"
 			count: 2
 			path: src/PhpSpreadsheet/Calculation/MathTrig/Combinations.php
@@ -1172,11 +1117,6 @@ parameters:
 
 		-
 			message: "#^Call to an undefined method object\\:\\:getHashCode\\(\\)\\.$#"
-			count: 1
-			path: src/PhpSpreadsheet/Cell/Coordinate.php
-
-		-
-			message: "#^Cannot use array destructuring on array\\|null\\.$#"
 			count: 1
 			path: src/PhpSpreadsheet/Cell/Coordinate.php
 
@@ -2376,36 +2316,6 @@ parameters:
 			path: src/PhpSpreadsheet/Reader/Xls/ErrorCode.php
 
 		-
-			message: "#^Method PhpOffice\\\\PhpSpreadsheet\\\\Reader\\\\Xls\\\\MD5\\:\\:f\\(\\) has no return type specified\\.$#"
-			count: 1
-			path: src/PhpSpreadsheet/Reader/Xls/MD5.php
-
-		-
-			message: "#^Method PhpOffice\\\\PhpSpreadsheet\\\\Reader\\\\Xls\\\\MD5\\:\\:g\\(\\) has no return type specified\\.$#"
-			count: 1
-			path: src/PhpSpreadsheet/Reader/Xls/MD5.php
-
-		-
-			message: "#^Method PhpOffice\\\\PhpSpreadsheet\\\\Reader\\\\Xls\\\\MD5\\:\\:h\\(\\) has no return type specified\\.$#"
-			count: 1
-			path: src/PhpSpreadsheet/Reader/Xls/MD5.php
-
-		-
-			message: "#^Method PhpOffice\\\\PhpSpreadsheet\\\\Reader\\\\Xls\\\\MD5\\:\\:i\\(\\) has no return type specified\\.$#"
-			count: 1
-			path: src/PhpSpreadsheet/Reader/Xls/MD5.php
-
-		-
-			message: "#^Method PhpOffice\\\\PhpSpreadsheet\\\\Reader\\\\Xls\\\\MD5\\:\\:rotate\\(\\) has no return type specified\\.$#"
-			count: 1
-			path: src/PhpSpreadsheet/Reader/Xls/MD5.php
-
-		-
-			message: "#^Method PhpOffice\\\\PhpSpreadsheet\\\\Reader\\\\Xls\\\\MD5\\:\\:step\\(\\) has parameter \\$func with no type specified\\.$#"
-			count: 1
-			path: src/PhpSpreadsheet/Reader/Xls/MD5.php
-
-		-
 			message: "#^Property PhpOffice\\\\PhpSpreadsheet\\\\Reader\\\\Xls\\\\RC4\\:\\:\\$i has no type specified\\.$#"
 			count: 1
 			path: src/PhpSpreadsheet/Reader/Xls/RC4.php
@@ -3119,11 +3029,6 @@ parameters:
 			message: "#^Argument of an invalid type SimpleXMLElement\\|null supplied for foreach, only iterables are supported\\.$#"
 			count: 1
 			path: src/PhpSpreadsheet/Reader/Xml/Style.php
-
-		-
-			message: "#^Cannot use array destructuring on array\\|null\\.$#"
-			count: 4
-			path: src/PhpSpreadsheet/ReferenceHelper.php
 
 		-
 			message: "#^Elseif condition is always true\\.$#"
@@ -4086,36 +3991,6 @@ parameters:
 			path: src/PhpSpreadsheet/Style/ConditionalFormatting/ConditionalFormattingRuleExtension.php
 
 		-
-			message: "#^Method PhpOffice\\\\PhpSpreadsheet\\\\Style\\\\NumberFormat\\\\DateFormatter\\:\\:escapeQuotesCallback\\(\\) has parameter \\$matches with no type specified\\.$#"
-			count: 1
-			path: src/PhpSpreadsheet/Style/NumberFormat/DateFormatter.php
-
-		-
-			message: "#^Method PhpOffice\\\\PhpSpreadsheet\\\\Style\\\\NumberFormat\\\\DateFormatter\\:\\:format\\(\\) has parameter \\$value with no type specified\\.$#"
-			count: 1
-			path: src/PhpSpreadsheet/Style/NumberFormat/DateFormatter.php
-
-		-
-			message: "#^Method PhpOffice\\\\PhpSpreadsheet\\\\Style\\\\NumberFormat\\\\DateFormatter\\:\\:setLowercaseCallback\\(\\) has parameter \\$matches with no type specified\\.$#"
-			count: 1
-			path: src/PhpSpreadsheet/Style/NumberFormat/DateFormatter.php
-
-		-
-			message: "#^Parameter \\#1 \\$format of method DateTime\\:\\:format\\(\\) expects string, string\\|null given\\.$#"
-			count: 1
-			path: src/PhpSpreadsheet/Style/NumberFormat/DateFormatter.php
-
-		-
-			message: "#^Parameter \\#2 \\$replace of function str_replace expects array\\|string, int given\\.$#"
-			count: 1
-			path: src/PhpSpreadsheet/Style/NumberFormat/DateFormatter.php
-
-		-
-			message: "#^Parameter \\#3 \\$subject of function preg_replace expects array\\|string, string\\|null given\\.$#"
-			count: 1
-			path: src/PhpSpreadsheet/Style/NumberFormat/DateFormatter.php
-
-		-
 			message: "#^Method PhpOffice\\\\PhpSpreadsheet\\\\Style\\\\NumberFormat\\\\Formatter\\:\\:splitFormat\\(\\) has no return type specified\\.$#"
 			count: 1
 			path: src/PhpSpreadsheet/Style/NumberFormat/Formatter.php
@@ -4301,16 +4176,6 @@ parameters:
 			path: src/PhpSpreadsheet/Worksheet/Worksheet.php
 
 		-
-			message: "#^Parameter \\#1 \\$row of method PhpOffice\\\\PhpSpreadsheet\\\\Collection\\\\Cells\\:\\:removeRow\\(\\) expects string, int given\\.$#"
-			count: 1
-			path: src/PhpSpreadsheet/Worksheet/Worksheet.php
-
-		-
-			message: "#^Parameter \\#1 \\$row of method PhpOffice\\\\PhpSpreadsheet\\\\Collection\\\\Cells\\:\\:removeRow\\(\\) expects string, int\\<1, max\\> given\\.$#"
-			count: 1
-			path: src/PhpSpreadsheet/Worksheet/Worksheet.php
-
-		-
 			message: "#^Parameter \\#2 \\$format of static method PhpOffice\\\\PhpSpreadsheet\\\\Style\\\\NumberFormat\\:\\:toFormattedString\\(\\) expects string, string\\|null given\\.$#"
 			count: 2
 			path: src/PhpSpreadsheet/Worksheet/Worksheet.php
@@ -4332,7 +4197,7 @@ parameters:
 
 		-
 			message: "#^Strict comparison using \\=\\=\\= between string and null will always evaluate to false\\.$#"
-			count: 1
+			count: 2
 			path: src/PhpSpreadsheet/Worksheet/Worksheet.php
 
 		-
@@ -4689,11 +4554,6 @@ parameters:
 			message: "#^Property PhpOffice\\\\PhpSpreadsheet\\\\Writer\\\\Ods\\\\Formula\\:\\:\\$definedNames has no type specified\\.$#"
 			count: 1
 			path: src/PhpSpreadsheet/Writer/Ods/Formula.php
-
-		-
-			message: "#^Parameter \\#1 \\$content of method XMLWriter\\:\\:text\\(\\) expects string, int given\\.$#"
-			count: 2
-			path: src/PhpSpreadsheet/Writer/Ods/Settings.php
 
 		-
 			message: "#^Cannot call method getHashCode\\(\\) on PhpOffice\\\\PhpSpreadsheet\\\\Style\\\\Font\\|null\\.$#"
@@ -5092,7 +4952,7 @@ parameters:
 
 		-
 			message: "#^Parameter \\#2 \\$value of method XMLWriter\\:\\:writeAttribute\\(\\) expects string, int given\\.$#"
-			count: 45
+			count: 44
 			path: src/PhpSpreadsheet/Writer/Xlsx/Chart.php
 
 		-
@@ -5197,7 +5057,7 @@ parameters:
 
 		-
 			message: "#^Parameter \\#2 \\$id of method PhpOffice\\\\PhpSpreadsheet\\\\Writer\\\\Xlsx\\\\Rels\\:\\:writeRelationship\\(\\) expects int, string given\\.$#"
-			count: 4
+			count: 5
 			path: src/PhpSpreadsheet/Writer/Xlsx/Rels.php
 
 		-
@@ -5383,11 +5243,6 @@ parameters:
 		-
 			message: "#^Negated boolean expression is always false\\.$#"
 			count: 1
-			path: src/PhpSpreadsheet/Writer/Xlsx/Worksheet.php
-
-		-
-			message: "#^Offset int\\<1, max\\> on array\\<string, non\\-empty\\-array\\<int, string\\>\\> in isset\\(\\) does not exist\\.$#"
-			count: 2
 			path: src/PhpSpreadsheet/Writer/Xlsx/Worksheet.php
 
 		-

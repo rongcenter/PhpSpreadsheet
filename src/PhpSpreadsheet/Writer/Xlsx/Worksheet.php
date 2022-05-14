@@ -120,6 +120,9 @@ class Worksheet extends WriterPart
         // AlternateContent
         $this->writeAlternateContent($objWriter, $worksheet);
 
+        // Table
+        $this->writeTable($objWriter, $worksheet);
+
         // ConditionalFormattingRuleExtensionList
         // (Must be inserted last. Not insert last, an Excel parse error will occur)
         $this->writeExtLst($objWriter, $worksheet);
@@ -994,6 +997,25 @@ class Worksheet extends WriterPart
     }
 
     /**
+     * Write Table.
+     */
+    private function writeTable(XMLWriter $objWriter, PhpspreadsheetWorksheet $worksheet): void
+    {
+        $tableCount = $worksheet->getTableCollection()->count();
+
+        $objWriter->startElement('tableParts');
+        $objWriter->writeAttribute('count', (string) $tableCount);
+
+        for ($t = 1; $t <= $tableCount; ++$t) {
+            $objWriter->startElement('tablePart');
+            $objWriter->writeAttribute('r:id', 'rId_table_' . $t);
+            $objWriter->endElement();
+        }
+
+        $objWriter->endElement();
+    }
+
+    /**
      * Write PageSetup.
      */
     private function writePageSetup(XMLWriter $objWriter, PhpspreadsheetWorksheet $worksheet): void
@@ -1123,11 +1145,15 @@ class Worksheet extends WriterPart
         // Highest row number
         $highestRow = $worksheet->getHighestRow();
 
-        // Loop through cells
+        // Loop through cells building a comma-separated list of the columns in each row
+        // This is a trade-off between the memory usage that is required for a full array of columns,
+        //      and execution speed
+        /** @var array<int, string> $cellsByRow */
         $cellsByRow = [];
         foreach ($worksheet->getCoordinates() as $coordinate) {
-            $cellAddress = Coordinate::coordinateFromString($coordinate);
-            $cellsByRow[$cellAddress[1]][] = $coordinate;
+            [$column, $row] = Coordinate::coordinateFromString($coordinate);
+            $cellsByRow[$row] = $cellsByRow[$row] ?? '';
+            $cellsByRow[$row] .= "{$column},";
         }
 
         $currentRow = 0;
@@ -1173,9 +1199,12 @@ class Worksheet extends WriterPart
 
                 // Write cells
                 if (isset($cellsByRow[$currentRow])) {
-                    foreach ($cellsByRow[$currentRow] as $cellAddress) {
+                    // We have a comma-separated list of column names (with a trailing entry); split to an array
+                    $columnsInRow = explode(',', $cellsByRow[$currentRow]);
+                    array_pop($columnsInRow);
+                    foreach ($columnsInRow as $column) {
                         // Write cell
-                        $this->writeCell($objWriter, $worksheet, $cellAddress, $aFlippedStringTable);
+                        $this->writeCell($objWriter, $worksheet, "{$column}{$currentRow}", $aFlippedStringTable);
                     }
                 }
 
